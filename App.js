@@ -118,7 +118,7 @@ child2
         so we can ignore the node modules folder while pushing code to github
     npx 
         we use npm to install the package
-        npx is to run the package
+        npx is to execute or run the package
         ex: npx parcel index.html
     browserslist package
         to suport older browsers
