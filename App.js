@@ -1,3 +1,5 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 /*  
 React JS 
     It is a Javascript Library for web and native user interfaces.
@@ -21,10 +23,17 @@ React JS
         It’s not a web view, your React components render real Android and iOS views provided by the platform.
     
     Adding React to the project
-        through CDN 
+        using CDN 
             add React and ReactDOM cdn links at end of body tag
             react.js file contains core of react
             react-dom.js file is needed to modify the DOM
+        using npm
+            npm i react 
+            npm i react-dom
+            add import statement like: import React from "react"
+            script tags in html are browser scripts
+            browser scripts can't have imports or exports
+            so we give type="module" for script tags where have import/export statements
 React.createElement
     creating elements is core thing in react, as this is used in native or others also
     parameters: tag name, attributes and children
@@ -78,4 +87,65 @@ const siblings = React.createElement("div", { id: "parent" }, [
 ouput:
 child1
 child2
+*/
+
+/*
+    npm 
+        manages packages
+        not node package manager, it doesn't have a full form
+    package.json 
+        it is configuration for npm
+    App dependencies
+        normal dependencies
+            required in development and production also
+        dev dependencies
+            required only in development phase
+    caret(^) before version
+        ^version “Compatible with version”
+        will automatically update you to all future minor/patch versions that are backwards-compatible
+        without incrementing the major version. ^1.2.3 will use releases from 1.2.3 to < 2.0.0
+    tilde(~) before version
+        ~version “Approximately equivalent to version”
+        will automatically update you to all future patch versions that are backwards-compatible
+        without incrementing the minor version. ~1.2.3 will use releases from 1.2.3 to < 1.3.0.
+    node modules 
+        contains app dependency packages
+        and also dependencies of each packages so on
+    package-lock.json
+        it keeps record of exact version and other info of all the packages in node modules
+    npm install 
+        it will install every package inside package.json with exact version in package-lock.json
+        so we can ignore the node modules folder while pushing code to github
+    npx 
+        we use npm to install the package
+        npx is to run the package
+        ex: npx parcel index.html
+    browserslist package
+        to suport older browsers
+        added browserslist in package.json
+    parcel
+        it is a bundler like webpack
+        it does
+            dev build 
+            local server
+            HMR - Hot Module Replacement
+                auto refresh page after saving file
+            uses cache for faster builds 
+            Image Optimization 
+            Minification
+            Compress files 
+            Consistent hashing 
+            Code splitting 
+            Differential Bundling
+                to support older browsers
+            HTTPS
+                can open the app in HTTPS instead of HTTP
+            Tree shaking
+                remove unused code 
+            Different dev and prod bundles 
+
+
+
+            
+
 */
