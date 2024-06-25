@@ -6,7 +6,11 @@
     <title>ReactJS</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- since root.render will replace everything inside root, if something went wrong
+      below tag will be displayed -->
+      <h1>Not Rendered</h1>
+    </div>
     
     <!-- using react through CDN, not prefered way -->
     <!-- <script
