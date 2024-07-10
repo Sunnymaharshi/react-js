@@ -2,6 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
+import About from "./components/About";
+import Contact from "./components/Contact";
+import ResMenu from "./components/ResMenu";
+import Error from "./components/Error";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import "./App.css";
 /*  
 React JS 
@@ -286,24 +291,92 @@ root.render(<Heading />);
                 function component is called with new state value
                 React does not update the const state variable
                 const state variable is re-created with new value
+            Best practices
+                never create useState variable inside 
+                    condition
+                    loop
+                    function in component
+            
+
+
+
+
             
 
         useEffect 
-            it takes 2 arguments, callback function and a dependency array
-            callback function will be called after component rendered
-            
+            it takes 2 arguments, callback function and a dependency array  
+            callback function will run after component is rendered          
+            2nd argument
+                no dependency array 
+                    callback will be called everytime component renders
+                empty dependency array 
+                    callback will be called only on initial render (just once)
+                non-empty dependency array 
+                    callback will be called on initial render and when any of dependencies changes.
+                
+
+    React Router Dom 
+        createBrowserRouter
+            used to create config for all paths with associated components
+            errorElement
+                if any error comes this element will render
+                it will given for path '/'
+                ex:to render 404 page component if path is not found  
+                useRouteError Hook
+                    it gives more info about error      
+            children routers 
+                children property inside a path object
+                it takes array of path objects 
+                'Outlet' will be replaced with children according to the path    
+        RouterProvider
+            it will take createBrowserRouter variable as an argument
+            we render this on root element instead of App component
+        Link component
+            navigate to different paths without total page reload
+            'to' attribute to give path
+            internally Link is using anchor tag, when we see in browser it will be anchor tag
+            if we use anchor(a) tags instead of Link, it will reload total page 
+        Dynamic paths 
+            has :id in the path
+            useParams Hook is used to get dynamic value/Id
+
+
         
-
-
-
+  
 */
 
 const App = () => {
   return (
     <div className="app">
       <Header />
-      <Body />
+      <Outlet />
     </div>
   );
 };
-root.render(<App />);
+
+const appRouter = createBrowserRouter([
+    {
+        path:'/',
+        element:<App />,
+        errorElement:<Error />,
+        children:[
+            {
+                path:'/',
+                element: <Body />
+            },
+            {
+                path:'/about',
+                element: <About />
+            },
+            {
+                path:'/contact',
+                element: <Contact />
+            },
+            {
+                path:'/restaurant/:resId',
+                element: <ResMenu />
+            }
+        ]
+    }
+])
+root.render(<RouterProvider router={appRouter}/>);
