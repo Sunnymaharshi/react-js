@@ -1,4 +1,4 @@
-import React from "react";
+import React, {lazy, Suspense} from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
@@ -8,6 +8,7 @@ import ResMenu from "./components/ResMenu";
 import Error from "./components/Error";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import "./App.css";
+const Grocery = lazy(()=> import('./components/Grocery'))
 /*  
 React JS 
     It is a Javascript Library for web and native user interfaces.
@@ -393,9 +394,26 @@ root.render(<Heading />);
             ex: removing setTimeout or setInterval etc 
         * componentDidMount is not equivalent to useEffect(internally both are different)
 
+    custom Hooks 
+        to abstract the implementation and modularize code
+        normal js functions with react hooks
+        file and hook name prefered to start with use 
+        ex: custom hook to fetch the user data      
+    
+    Optimization
+        App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
+            load the component in a seperate bundle
+            divide the bundle file into multiple smaller bundles  
+            'lazy' function in react 
+                split the component code into seperate bundle file 
+                component import is passed as argument to lazy function
+            'Suspense' component in react 
+                used to defer component loading until bundle file is downloaded
+                fallback attribute
+                    takes JSX/Component 
+                    fallback JSX is rendered until bundle file is downloaded
 
 
-        
   
 */
 
@@ -425,6 +443,10 @@ const appRouter = createBrowserRouter([
             {
                 path:'/contact',
                 element: <Contact />
+            },
+            {
+                path:'/grocery',
+                element: <Suspense fallback={<h1>Huge component is loading</h1>}><Grocery /></Suspense>
             },
             {
                 path:'/restaurant/:resId',
