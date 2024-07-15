@@ -313,6 +313,10 @@ root.render(<Heading />);
                     callback will be called only on initial render (just once)
                 non-empty dependency array 
                     callback will be called on initial render and when any of dependencies changes.
+            return function
+                u can return a function in useEffect to cleanup 
+                this function will be called before component is removed/unmounted
+                ex: removing setTimeout or setInterval etc 
                 
 
     React Router Dom 
@@ -339,6 +343,56 @@ root.render(<Heading />);
         Dynamic paths 
             has :id in the path
             useParams Hook is used to get dynamic value/Id
+
+
+    Class based Components
+        component class extends React.Component class
+        render method will return jsx
+        props 
+            can be accessed from constructor argument
+            must pass props to 'super' before accessing them
+        state variables
+            we create state variables in 'this.state' object inside constructor
+            this.setState function to update state variables (update whole 'this.state' object)
+        React Class based component LIfecycle
+            Render phase
+                Constructor
+                Render method 
+                here everything happens inside vDOM
+            Commit phase
+                React updates DOM and refs
+                componentDidMount
+        LIfecycle of parent and child class components
+            parent constructor
+            parent render 
+            child constructor
+            child render
+            child componentDidMount
+            parent componentDidMount
+        LIfecycle of parent and multiple child class components
+            React Optimization
+                react will batch the render phase and commit phase of multiple children together
+                1st child render phase 
+                2nd child render phase 
+                1st child commit phase 
+                2nd child commit phase 
+            parent constructor
+            parent render 
+            1st child constructor
+            1st child render
+            2nd child constructor
+            2nd child render
+            1st child componentDidMount
+            2nd child componentDidMount
+            parent componentDidMount
+        componentDidUpdate
+            called after component is updated (re-rendered)
+        componentWillUnmount
+            called before component is removed
+            used to cleanup 
+            ex: removing setTimeout or setInterval etc 
+        * componentDidMount is not equivalent to useEffect(internally both are different)
+
 
 
         
