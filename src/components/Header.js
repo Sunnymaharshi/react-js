@@ -12,17 +12,17 @@ const Header = () => {
         console.log("Header useEffect called");
     },[btnName])
     return (
-      <div className="header">
+      <div className="header flex justify-between items-center bg-pink-100 shadow-sm mb-2">
         <div className="logo-container">
-          <img src={LOGO_URL} />
+          <img className="w-30 h-24" src={LOGO_URL} />
         </div>
         <div className="nav-items">
-          <ul>
-            <li><Link to='/'>Home</Link></li>
-            <li><Link to='/grocery'>Grocery</Link></li>
-            <li><Link to='/about'>About Us</Link></li>
-            <li><Link to='/contact'>Contact Us</Link></li>
-            <li><Link to='/'></Link>Cart</li>
+          <ul className="flex">
+            <li className="px-5"><Link to='/'>Home</Link></li>
+            <li className="px-5"><Link to='/grocery'>Grocery</Link></li>
+            <li className="px-5"><Link to='/about'>About Us</Link></li>
+            <li className="px-5"><Link to='/contact'>Contact Us</Link></li>
+            <li className="px-5"><Link to='/'></Link>Cart</li>
             <button className="login-btn" onClick={toggleLogin}>{btnName}</button>
           </ul>
         </div>

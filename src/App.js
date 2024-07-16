@@ -7,7 +7,7 @@ import Contact from "./components/Contact";
 import ResMenu from "./components/ResMenu";
 import Error from "./components/Error";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import "./App.css";
+import "./index.css";
 const Grocery = lazy(()=> import('./components/Grocery'))
 /*  
 React JS 

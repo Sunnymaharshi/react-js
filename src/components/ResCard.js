@@ -8,7 +8,7 @@ const ResCard = (props) => {
   
     return (
       // wrapped object inside {}, since JSX runs Javascript only inside {}
-      <div className="res-card" style={{ backgroundColor: "#f0f0f0" }}>
+      <div className="res-card m-2 p-1 w-[250px]" style={{ backgroundColor: "#f0f0f0" }}>
         <img
           className="res-logo"
           src={CDN_URL
@@ -17,7 +17,7 @@ const ResCard = (props) => {
           }
           alt="food"
         />
-        <h3>{name}</h3>
+        <h3 className="font-bold py-4 text-lg">{name}</h3>
         <h4>{cuisines.join(", ")}</h4>
         <h4>{avgRating}</h4>
         <h4>{sla.deliveryTime} min</h4>

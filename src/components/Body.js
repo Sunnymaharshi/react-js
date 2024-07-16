@@ -38,16 +38,16 @@ const Body = () => {
   // Conditional Rendering  
   return listOfRestaurants.length === 0 ? <Shimmer/> : (
     <div className="body">
-      <div className="filter">
-        <div className="search">
-            <input type="text" className="search-input" value={searchText} onChange={(e)=>{
+      <div className="filter flex items-center">
+        <div className="search m-4 p-4">
+            <input type="text" className="search-input border border-solid border-black p-2" value={searchText} onChange={(e)=>{
                 setSearchText(e.target.value)
             }}/>
-            <button onClick={handleSearch}>Search</button>
+            <button onClick={handleSearch} className="p-2 mx-2 bg-green-400 rounded-lg">Search</button>
         </div>
-        <button className="filter-btn" onClick={handleFilter}>Top Rated Restaurants</button>
+        <button className="filter-btn h-max p-2 mx-2 bg-green-400 rounded-lg" onClick={handleFilter}>Top Rated Restaurants</button>
       </div>
-      <div className="res-container">
+      <div className="res-container flex flex-wrap">
         {filteredRestaurants.map((res) => (
           <Link to={"/restaurant/"+res.info.id} key={res.info.id}><ResCard resData={res}  /></Link>
         ))}
