@@ -26,3 +26,20 @@ const ResCard = (props) => {
 };
 
 export default ResCard;
+
+// higher order component
+
+export const withPromotedLabel = (ResCard) => {
+    // returns another component
+    return (props)=>{
+
+        // JSX of the returning component
+        return (
+            <div>
+                <label className="absolute bg-black text-white mx-2 p-2 rounded-lg">Promoted</label>
+                <ResCard {...props}/>
+            </div>
+
+        )
+    }
+}

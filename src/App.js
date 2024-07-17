@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from "react";
+import React, {lazy, Suspense, useEffect, useState} from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
@@ -8,6 +8,7 @@ import ResMenu from "./components/ResMenu";
 import Error from "./components/Error";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import "./index.css";
+import UserContext from "./utils/UserContext";
 const Grocery = lazy(()=> import('./components/Grocery'))
 /*  
 React JS 
@@ -413,16 +414,51 @@ root.render(<Heading />);
                     takes JSX/Component 
                     fallback JSX is rendered until bundle file is downloaded
 
+    Higher Order Components 
+        Component that takes a component and returns a component
+        used to enhance the components
+        this won't modify the code/behaviour of original component
+    
+    Controlled
+        parent controls the child component
+        then child is controlled component
+    Uncontrolled Components
+        if component has it's own state and not controlled by it's parent
 
-  
+    props drilling 
+        passing props through many components till target component
+    useContext 
+        solves props drilling
+        lets a parent component provide data to the entire tree below it
+        createContext
+            to create a context for the data 
+            can create multiple contexts 
+        useContext
+            to access the created context data
+            returns an object with data
+        Context_Name.Consumer component
+            to access the data in context            
+        Context_Name.Provider component
+            to update the data in context
+            all the child components inside the Provider can access the data 
+        
 */
 
 const App = () => {
+
+    const [userName,setUserName] = useState("default");
+
+    useEffect(()=>{
+        // fetch user info  and update the context 
+        setUserName("Sunny");
+    },[])
   return (
-    <div className="app">
-      <Header />
-      <Outlet />
-    </div>
+    <UserContext.Provider value={{loggedInUser:userName,setUserName}}>
+        <div className="app">
+        <Header />
+        <Outlet />
+        </div>
+    </UserContext.Provider>
   );
 };
 

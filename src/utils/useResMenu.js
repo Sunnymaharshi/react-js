@@ -8,8 +8,8 @@ const useResMenu = (resId)=> {
     },[])
     const fetchMenu = async ()=>{
         const data = await fetch(MENU_API + resId);
+        // const data = await fetch("https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9352403&lng=77.624532&restaurantId=201224&catalog_qa=undefined&submitAction=ENTER");
         const menu = await data.json()
-        console.log(menu)
         setResInfo(menu.data)
     }
 
