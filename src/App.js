@@ -7,8 +7,11 @@ import Contact from "./components/Contact";
 import ResMenu from "./components/ResMenu";
 import Error from "./components/Error";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { Provider } from "react-redux";
 import "./index.css";
 import UserContext from "./utils/UserContext";
+import appStore from "./utils/appStore";
+import Cart from "./components/Cart";
 const Grocery = lazy(()=> import('./components/Grocery'))
 /*  
 React JS 
@@ -427,7 +430,7 @@ root.render(<Heading />);
 
     props drilling 
         passing props through many components till target component
-    useContext 
+    useContext in react
         solves props drilling
         lets a parent component provide data to the entire tree below it
         createContext
@@ -441,6 +444,57 @@ root.render(<Heading />);
         Context_Name.Provider component
             to update the data in context
             all the child components inside the Provider can access the data 
+    
+    Redux 
+        3rd party library alternative to useContext
+        it is not mandatory
+        it is used to manage state in JS Apps
+        easy to debug, redux devtools extension shows actions, trace and state visual etc
+    React-Redux
+        for react 
+    Redux toolkit (RTK)
+        gives a standard way of writing redux logic 
+    Redux store 
+        Big JS object stored in global central space 
+        slice 
+            small portion in redux store 
+            act as a partitions to seperate the data 
+            in config, it has data and actions with corresponding reducer functions
+            export actions and reducer
+            add this reducer in appStore reducer 
+        to write data 
+            dispatch 'action' 
+                after clicking on add button it's dispatch an 'action'
+                which calls a function('reducer') which updates slice of redux store 
+            reducer function
+                takes state and action as an arguments 
+                state is current state of slice
+                action have data in payload attribute
+                used to update the data 
+            *Only modify the state object, don't change the reference of state object
+            otherwise state won't be updated because redux uses immer library internally
+        to read data 
+            selector 
+                it is useSelector Hook
+                to subscribe to the store data
+                reads data from slice of redux store
+                when data in store changes, it automatically updates the component
+                *Only subscribe the data that is needed inside the component (Optimization)
+        useDispatch hook 
+            to dispatch an action 
+    
+     
+        
+
+
+
+
+
+
+
+
+
+
         
 */
 
@@ -453,12 +507,14 @@ const App = () => {
         setUserName("Sunny");
     },[])
   return (
+    <Provider store={appStore}>
     <UserContext.Provider value={{loggedInUser:userName,setUserName}}>
         <div className="app">
         <Header />
         <Outlet />
         </div>
     </UserContext.Provider>
+    </Provider>
   );
 };
 
@@ -487,6 +543,10 @@ const appRouter = createBrowserRouter([
             {
                 path:'/restaurant/:resId',
                 element: <ResMenu />
+            },
+            {
+                path:'/cart',
+                element: <Cart />
             }
         ]
     }
