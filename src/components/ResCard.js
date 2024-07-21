@@ -8,7 +8,7 @@ const ResCard = (props) => {
   
     return (
       // wrapped object inside {}, since JSX runs Javascript only inside {}
-      <div className="res-card m-2 p-1 w-[250px]" style={{ backgroundColor: "#f0f0f0" }}>
+      <div className="res-card m-2 p-1 w-[250px]" data-testid="rescard" style={{ backgroundColor: "#f0f0f0" }}>
         <img
           className="res-logo"
           src={CDN_URL

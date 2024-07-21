@@ -483,8 +483,54 @@ root.render(<Heading />);
         useDispatch hook 
             to dispatch an action 
     
+    Testing 
+        Unit testing 
+            testing just a single component or function
+        Integration testing 
+            testing multi components with are integrated/communicate each other 
+        End to End (e2e) testing 
+            testing userflow 
+    React testing library
+        it uses DOM testing library and Jest internally
+        Jest 
+            JavaScript Testing Framework
+            Finding Tests
+            Running the tests
+            Determining whether the tests pass or fail
+        Setup(if not used create-react-app)
+            Jest need babel dependencies, which will conflict with babel in parcel 
+            configure babel for jest.
+            so override the default Parcel config for JavaScript to exclude @parcel/transformer-babel
+            this will configure parcel to disable Babel transpilation
+            This will allow other tools to continue using your Babel Config
+            Configure jest 
+            install jsdom 
+    it() is same as test() in test cases 
+    when multiple elements present use function with All to check in screen 
+    describe is used to group multiple test cases 
+    component with state updates and async testing 
+        wrap render inside act function
+    jest.fn()
+        takes mock function as a callback in argument
+
+    beforeAll 
+        it will run before all test cases run
+    beforeEach 
+        it will run before each test case runs 
+    afterAll 
+        it will run after all test cases run
+    afterEach 
+        it will run after each test case runs 
+    
+
+
      
+
+    
+    
+
         
+
 
 
 

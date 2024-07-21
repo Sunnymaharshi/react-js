@@ -11,7 +11,6 @@ const ResMenu = () => {
     }
     const {resId} = useParams();    
     const resInfo =  useResMenu(resId);
-
     if(resInfo===null) return <Shimmer/>
 
     // destructuring only if resInfo is not null, as above block will return loading tag

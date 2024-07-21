@@ -13,7 +13,7 @@ const Header = () => {
     // subscribing to store using selector hook 
     const cartItems = useSelector((store)=>store.cart.items);
     useEffect(()=>{
-        console.log("Header useEffect called");
+        //console.log("Header useEffect called");
     },[btnName])
 
    

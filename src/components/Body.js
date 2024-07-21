@@ -42,7 +42,7 @@ const Body = () => {
     <div className="body">
       <div className="filter flex items-center">
         <div className="search m-4 p-4">
-            <input type="text" className="search-input border border-solid border-black p-2" value={searchText} onChange={(e)=>{
+            <input type="text" data-testid="searchInput" className="search-input border border-solid border-black p-2" value={searchText} onChange={(e)=>{
                 setSearchText(e.target.value)
             }}/>
             <button onClick={handleSearch} className="p-2 mx-2 bg-green-400 rounded-lg">Search</button>
