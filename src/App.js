@@ -300,14 +300,7 @@ root.render(<Heading />);
                 never create useState variable inside 
                     condition
                     loop
-                    function in component
-            
-
-
-
-
-            
-
+                    function in component         
         useEffect 
             it takes 2 arguments, callback function and a dependency array  
             callback function will run after component is rendered          
@@ -321,7 +314,26 @@ root.render(<Heading />);
             return function
                 u can return a function in useEffect to cleanup 
                 this function will be called before component is removed/unmounted
-                ex: removing setTimeout or setInterval etc 
+                ex: removing setTimeout or setInterval, unsubscribing event listeners etc 
+        useRef Hook 
+            lets u reference a value that's not needed for rendering 
+            returns an object with value inside current property.
+            u can directly update value like ref.current = ref.current + 1
+            this won't trigger re-render
+            ex: ref of input fields, variables to be tracked between re-renders
+            let variable will be reset to it's initial value when re-renders 
+            useRef variable will not reset, value is persistent even after re-renders 
+            so it is used when want to track a variable between re-renders
+        useMemo Hook 
+            lets you cache the result of calculation between re-renders 
+            takes function whose result to be cached, and dependencies for that function
+            so it will run that function only when it's dependencies are changed
+            it will prevent re-running the heavy functions when re-render is triggered by other
+        useCallback hook 
+            lets you cache a function defination between re-renders
+
+
+
                 
 
     React Router Dom 
@@ -522,7 +534,16 @@ root.render(<Heading />);
     afterEach 
         it will run after each test case runs 
     
-
+    
+    //Debouncing in React,we create useState for search input value 
+    useEffect(()=>{
+        const timer = setTimeout(()=>getSearchData(),300);
+        // while typing, this component rerenders and useEffect is called
+        // while component is unmounting, we remove the timer
+        return {
+            clearTimeout(timer)
+        }
+    },[searchText])
 
      
 
