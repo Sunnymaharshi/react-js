@@ -207,10 +207,22 @@ React Components
         rendering it
             <Heading />
             <Heading></Heading>
-            {Heading()}        
+            {Heading()}  (don't use this method)  
+                this is not a component
+                react doesn't see this as a component instance    
         Component composition
             combining small components to create a big component
             components inside component
+
+    Component
+        description of piece of UI 
+        Template 
+    Component Instance
+        when we use a component, react creates an instance of the component from it's template 
+    React Elements 
+        JSX is converted to React.createElement() function calls 
+        It is result of these functions 
+        Information necessary to create DOM elements
 */
 const Title = () => {
   return <h1>Namaste React</h1>;
@@ -241,7 +253,37 @@ root.render(<Heading />);
         
     props 
         aka properties
+        props are read only.
         passing prop to Functional Component is same as passing argument to a function.
+        'children' prop 
+            it is passed for all components
+            used for more re-usability
+            whatever we pass inside the component tag, we get as a children prop 
+            ex: <Button><p>Submit</p></Button>
+            here, <p>Submit</p> is passed as children prop in Button component
+    propTypes 
+        used to specific type of props inside the component
+        to validate props passed to the component
+        ex: Button.propTypes = {
+            text: PropTypes.string.isRequired
+        }
+    Component composition 
+        combining different components using children prop (or explicitly defined props)
+        to create highly re-usable and flexible components,
+        this can fix prop drilling issue to an extent, 
+        move all components to top level by using children prop inside parent components 
+        then pass the state to components which need it
+        ex: in App component
+            <>
+                <Nav>
+                    <Profile user={user} />
+                </Nav>
+                <Main>
+                    <List>
+                        <MovieList movies={movies} />
+                    </List>
+                </Main>
+            </>
 
     Optional chaining (?.)
         (?.) operator accesses an object's property or calls a function. 
@@ -275,12 +317,57 @@ root.render(<Heading />);
     Standards
         don't keep hardcoded values inside Components
         keep them inside a config file ex:utils/constants.js
-    
-    Reconciliation Algorithm (React Fiber)
-        The algorithm React uses to diff one tree with another to determine which parts need to be changed.
-        react creates a Virtual DOM (a representation of actual DOM)        
-        it check difference btw old vDOM with new vDOM and then updates the actual DOM 
+    How React works
+        Render Phase 
+            Virtual DOM 
+                Tree of all react elements created from all instances in component tree
+            re-rendering a component will cause all of it's child components to be re-rendered as well 
+            no mater if props changed or not
 
+            Reconciliation (current reconciler in React is Fiber)
+                Deciding which DOM elements actually need to be inserted, deleted or updated to reflect latest state changes.
+                Fiber                 
+                    takes Element Tree (virtual DOM) and builds fiber tree
+                    fiber tree is a internal tree that has a 'fiber' for each component instance and DOM element
+                    Fibers are not created in every render, they just updated on every re-renders 
+                    it is unit of work
+                    work can be done asyncronously 
+                        work can be split, prioritize, paused and resumed
+                Diffing 
+                    comparing elements one by one based on their position in element tree (virtual DOM)
+                    same position different elements 
+                        different DOM element is created
+                        old components are removed from DOM including state
+                    same position same elements
+                        element will be kept (as well as child elements), including state
+                        we can use key prop to reset the state in this situation
+                        new props/attributes are passed if they changed between renders
+                after Reconciliation and Diffing, fiber tree is updated 
+                list of DOM updates need to be done are generated
+        Commit Phase 
+            ReactDOM library writes to DOM 
+            Renderer
+                it commits the result of render phase to application
+                ReactDOM is a renderer for browsers
+            Commiting is syncronous 
+                DOM is updated in one go
+            after commit phase, workInProgress fiber tree becomes current tree for next render cycle
+    
+    Key prop
+        special prop that we use to tell Diffing Algorithm that an element is unique
+        distinguish btw multiple instances of same component
+        using keys in list 
+            when key stays same across the renders, element will be kept in DOM 
+            even if the position in the tree changes
+            without key 
+                if new element is added to list at first 
+                position of previous elements will be changed
+                so they are removed and re-created in the DOM (bad performance)
+        using keys to reset the state 
+            when a key changes between renders, the element will be destroyed and a new one will be created 
+            even if the position in the tree is same as before
+            used when we are using same component with different props btw rerenders
+            to reset the state after re-render we use key prop in such cases.
 
     React Hooks 
         Normal Javascript utility functions in React
@@ -300,7 +387,20 @@ root.render(<Heading />);
                 never create useState variable inside 
                     condition
                     loop
-                    function in component         
+                    function in component  
+            Updating state based on the previous state
+                pass a callback function with state as argument to setState function
+                React treat this callback as updater function
+                It must be pure, should take the pending state as its only argument, and should return the next state. React will put your updater function in a queue and re-render your component. 
+                During the next render, React will calculate the next state by applying all of the queued updaters to the previous state. 
+                wrong way: 
+                setAge(age + 1);        // setAge(42 + 1)
+                setAge(age + 1);        // setAge(42 + 1)
+                setAge(age + 1);        // setAge(42 + 1)   
+                correct way:
+                setAge(a => a + 1);     // setAge(42 => 43)
+                setAge(a => a + 1);     // setAge(43 => 44)
+                setAge(a => a + 1);     // setAge(44 => 45)
         useEffect 
             it takes 2 arguments, callback function and a dependency array  
             callback function will run after component is rendered          
@@ -415,7 +515,11 @@ root.render(<Heading />);
         normal js functions with react hooks
         file and hook name prefered to start with use 
         ex: custom hook to fetch the user data      
-    
+    Controlled Elements 
+        by default, input elements have their own state in DOM
+        in react, we give state to these input elements, 
+        now react is controlling the state of input element
+
     Optimization
         App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
             load the component in a seperate bundle
@@ -434,7 +538,7 @@ root.render(<Heading />);
         used to enhance the components
         this won't modify the code/behaviour of original component
     
-    Controlled
+    Controlled Components
         parent controls the child component
         then child is controlled component
     Uncontrolled Components
