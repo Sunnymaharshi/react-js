@@ -369,15 +369,71 @@ root.render(<Heading />);
             used when we are using same component with different props btw rerenders
             to reset the state after re-render we use key prop in such cases.
 
+    Side Effect
+        dependency on or modification of any data outside the function scope 
+        ex: mutating external variables, HTTP requests, writing to DOM
+    Pure function
+        function without side effects
+        given the same input, a pure function will always return same output
+    Render logic 
+        code at top level of function component
+        participates in describing how component view looks like
+        executed every time the component renders
+        *Components must be pure when comes to render logic 
+        it must produce no side effects
+        must not update state (or refs), it creates infinite loop
+    Event handling functions 
+        executed as consequence of the event that the handler is listening to
+
+    State updates are Batched
+        when we have multiple state updates, react will batch all together
+        after batched state is updated, re-render will trigger
+        automatic batching 
+            React 18+
+                event handlers
+                timeouts 
+                promises 
+                native events
+        opt out automatic batching
+            by wraping a state update in ReactDOM.flushSync()
+            flushSync lets you force React to flush any updates inside the provided callback synchronously. 
+            This ensures that the DOM is updated immediately.
+            use: flushSync(callback)
+            can significantly hurt performance
+    Events in React 
+        react performs event delegation for all events in the app
+        registers all event handlers on root node 
+        Synthetic events 
+            wrapper around DOM's native event object
+            'e' we get in event handler in react is a Synthetic event
+            it fixes browser inconsistencies, so that events works same way in all browsers
+        default can not be prevented by returning false, only by preventDefault()
+        attach Capture to event, to handle in Capture phase like onClickCapture
     React Hooks 
         Normal Javascript utility functions in React
+        allow us to Hook into React internals 
+        creating and accessing state from fiber tree 
+        registering side effects in Fiber tree 
+        Manual DOM selections etc
+        allways starts with "use"
+        Rules 
+            only call hooks at top level 
+                do not call hooks inside conditionals, loops, nested functions or after an early return
+            only call hooks from react functions
+                only inside function components or a custom hook
         useState 
             creates state variables
-            takes default value as an argument
+            takes initial value or a callback function which returns a initial value as an argument
+            callback function 
+                aka lazy evaluation
+                must be a pure function and doesn't take any arguments
             const for variables
                 const prevents reassignment and we don't want to manipulate state directly 
                 by reassigning it. We want to call the setter function to update state instead.
             we use setter method to update the state variable
+            Updating state in react is asyncronous 
+                updated state variables are not immediately available after setState call
+                but only after re-rendering
             when state variable is updated
                 react will re-render the component where that state variable is defined
                 function component is called with new state value
@@ -402,6 +458,7 @@ root.render(<Heading />);
                 setAge(a => a + 1);     // setAge(43 => 44)
                 setAge(a => a + 1);     // setAge(44 => 45)
         useEffect 
+            it runs after browser paint (component rendered on the browser)
             it takes 2 arguments, callback function and a dependency array  
             callback function will run after component is rendered          
             2nd argument
@@ -411,19 +468,28 @@ root.render(<Heading />);
                     callback will be called only on initial render (just once)
                 non-empty dependency array 
                     callback will be called on initial render and when any of dependencies changes.
-            return function
+            cleanup function (optional)
                 u can return a function in useEffect to cleanup 
-                this function will be called before component is removed/unmounted
-                ex: removing setTimeout or setInterval, unsubscribing event listeners etc 
+                it forms a closure with callback function, it can access callback variables/functions
+                each effect should only do one thing, makes effects easier for cleanup
+                this function will be called before the effect is executed again (btw re-renders)
+                and when component is removed/unmounted
+                usage: removing setTimeout or setInterval, unsubscribing subscriptions, removing event listeners etc 
+                we can cancel/abort the fetch request in cleanup function using AbortController browser API
+        layoutEffect 
+            it runs before browser paint (component rendered on the browser)
+            not used much
         useRef Hook 
-            lets u reference a value that's not needed for rendering 
-            returns an object with value inside current property.
-            u can directly update value like ref.current = ref.current + 1
-            this won't trigger re-render
-            ex: ref of input fields, variables to be tracked between re-renders
-            let variable will be reset to it's initial value when re-renders 
-            useRef variable will not reset, value is persistent even after re-renders 
-            so it is used when want to track a variable between re-renders
+            normal variables will reset to their initial value when component re-renders
+            lets u reference a value that persistented across renders
+            returns an object with value inside mutable "current" property.
+            updating ref.current value does not trigger re-rendering 
+            u can directly update value like ref.current = ref.current + 1, this won't trigger re-render
+            ex: selecting and storing DOM elements like input fields,
+                create variables that stays same between renders like previous state, setTimeout id etc 
+            do not read or write .current in render logic
+            usually perform these actions in useEffect hooks, event handlers etc
+            ref updates are synchronous unlike state updates
         useMemo Hook 
             lets you cache the result of calculation between re-renders 
             takes function whose result to be cached, and dependencies for that function
@@ -431,8 +497,12 @@ root.render(<Heading />);
             it will prevent re-running the heavy functions when re-render is triggered by other
         useCallback hook 
             lets you cache a function defination between re-renders
-
-
+        custom Hooks 
+            re-using non-visual logic 
+            compose multiple hooks into our own custom Hook
+            to abstract the implementation and modularize code
+            file and hook name prefered to start with "use" 
+            ex: custom hook to fetch the user data
 
                 
 
@@ -509,12 +579,7 @@ root.render(<Heading />);
             used to cleanup 
             ex: removing setTimeout or setInterval etc 
         * componentDidMount is not equivalent to useEffect(internally both are different)
-
-    custom Hooks 
-        to abstract the implementation and modularize code
-        normal js functions with react hooks
-        file and hook name prefered to start with use 
-        ex: custom hook to fetch the user data      
+      
     Controlled Elements 
         by default, input elements have their own state in DOM
         in react, we give state to these input elements, 
