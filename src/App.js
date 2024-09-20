@@ -490,6 +490,8 @@ root.render(<Heading />);
             do not read or write .current in render logic
             usually perform these actions in useEffect hooks, event handlers etc
             ref updates are synchronous unlike state updates
+            usage: <input ref={ref_name} />
+            in useEffect, ref_name.current.focus()
         useMemo Hook 
             lets you cache the result of calculation between re-renders 
             takes function whose result to be cached, and dependencies for that function
@@ -498,8 +500,9 @@ root.render(<Heading />);
         useCallback hook 
             lets you cache a function defination between re-renders
         custom Hooks 
-            re-using non-visual logic 
+            re-using non-UI logic which uses Hooks
             compose multiple hooks into our own custom Hook
+            it can have arguments just like a function, not props like a component
             to abstract the implementation and modularize code
             file and hook name prefered to start with "use" 
             ex: custom hook to fetch the user data
