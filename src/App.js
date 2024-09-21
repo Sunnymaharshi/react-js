@@ -492,6 +492,35 @@ root.render(<Heading />);
             ref updates are synchronous unlike state updates
             usage: <input ref={ref_name} />
             in useEffect, ref_name.current.focus()
+        useReducer Hook 
+            similar to useState hook but for complex state updations
+            lets you add a reducer to your component.
+            takes reducer, initialArg, init(optional) as arguments            
+            reducer 
+                function that specifies how the state gets updated. It must be pure, 
+                should take the "state" and "action" as arguments, and should return the next state. 
+                State and action can be of any types.
+                do not modify the state, state is read only, always return new state from reducer
+            initialArg
+                value from which the initial state is calculated. It can be a value of any type. 
+                How the initial state is calculated from it depends on the next init argument.
+            init (optional)
+                initializer function that should return the initial state. 
+                If it’s not specified, the initial state is set to initialArg. 
+                Otherwise, the initial state is set to the result of calling init(initialArg)
+            Returns 
+                returns an array with exactly two values
+                state and dispatch function
+                dispatch function
+                    lets you update the state to a different value and trigger a re-render.
+                    action is only argument to dispatch function
+                        action performed by the user. It can be a value of "any type". 
+                        By convention, an action is usually an object with a type property identifying it and, optionally, other properties with additional information.
+                        ex: dispatch({type:"increment_age", value:2})
+                        dispatch(2) is also valid since we can pass value of any type as an action
+            React will set the next state to the result of calling the reducer function you’ve provided 
+            and the action you’ve passed to dispatch.
+            dispatch function only updates the state variable for the next render just like useState.
         useMemo Hook 
             lets you cache the result of calculation between re-renders 
             takes function whose result to be cached, and dependencies for that function
