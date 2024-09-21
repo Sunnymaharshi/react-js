@@ -550,19 +550,82 @@ root.render(<Heading />);
             children routers 
                 children property inside a path object
                 it takes array of path objects 
-                'Outlet' will be replaced with children according to the path    
+                'Outlet' will be replaced with children according to the path
+            ex: router = createBrowserRouter([
+                    {
+                        path: "/",
+                        element: <Home />,
+                        errorElement: <ErrorPage />,
+                    },
+                ]);    
         RouterProvider
             it will take createBrowserRouter variable as an argument
             we render this on root element instead of App component
+            ex: <RouterProvider router={router} />
         Link component
             navigate to different paths without total page reload
             'to' attribute to give path
             internally Link is using anchor tag, when we see in browser it will be anchor tag
             if we use anchor(a) tags instead of Link, it will reload total page 
+        NavLink
+            it is a special kind of Link that knows whether or not it is "active", "pending", or "transitioning".
+        Programatic Navigation
+            useNavigate Hook is used to navigate to URL through JavaScript instead of Link
+            ex: const navigate = useNavigate(); navigate("contact");
+            we can navigate back by passing negative value to navigate
+            -1 means 1 back, -2 means 2 backs, positive value do opposite of back navigate
         Dynamic paths 
             has :id in the path
             useParams Hook is used to get dynamic value/Id
+            ex: const [id] = useParams();
+            we can also add query strings same way just as query parameter with ? before :id
+            useSearchParams Hook is used to get the query strings from URL.
+            ex: const [searchParams,setSearchParams] = useSearchParams(); searchParams.get('query_parameter');
+            setSearchParams function returned from hook is used to set the query strings
+        Nested routes 
+            can declare using JSX with Route component or objects with children property
+            index property 
+                index routes render into their parent's Outlet at their parent's URL (like a default child route).
+            ex:{
+                path: "/",
+                element: <Root />,
+                children: [
+                {
+                    path: "contact",
+                    element: <Contact />,
+                },
+                {
+                    index:true,
+                    path: "dashboard",
+                    element: <Dashboard />,
+                    loader: ({ request }) =>
+                    fetch("/api/dashboard.json", {
+                        signal: request.signal,
+                    }),
+                }]
+            }
+            Outlet component
+                children route component is rendered in place of this Outlet
+        
 
+
+    CSS Modules 
+        one external file per component
+        styles in file are scoped to only that component
+        file name: {Component_Name}.module.css
+        we can only use class names, not any html elements to write CSS 
+        if we write css for html elements, it will be applied to all those elements in the app
+        file content: .btn {
+            color:red;
+        }
+        import
+            import styles from "./Home.module.css"
+        usage 
+            className={styles.nav}
+        React will add unique id after class name to avoid naming clashes
+        global function 
+            it is used to make a class global (available in total app)
+            ex: :global(.nav){}
 
     Class based Components
         component class extends React.Component class
