@@ -734,8 +734,10 @@ root.render(<Heading />);
                     state changes 
                     change in context that component is subscribed to
                     parent component re-renders
-                        *changing props does not re-render the component
+                    *changing props does not resets state (recreate component from scratch)
+                    since same element at same position in element tree, react preserves the state
                 1. passing slow components as a children or through props to parent component
+                    Assume we have a very slow component that performs an expensive "calculation" or "renders" a huge List
                     when state is changed in parent component, it triggers re-render and 
                     slow component inside parent also re-renders.
                     if slow component doesn't depends on state of parent component
@@ -751,6 +753,24 @@ root.render(<Heading />);
                         ex: <UserProvider>
                                 <App />
                             </UserProvider>
+                2. memo 
+                    above optimization can be achived with memo function also
+                    lets you skip re-rendering a component when its props are unchanged.
+                    But React may still re-render it: memoization is a performance optimization, not a guarantee.
+                    component argument
+                        component that you want to memoize
+                    arePropsEqual argument (optional)
+                        A function that accepts two arguments
+                            the component’s previous props, and its new props. 
+                            It should return true/flase by comparing props 
+                        By default, React will compare each prop with Object.is.
+                    returns 
+                        a memoized version of that component that will skip rerenders 
+                        as long as the props of this component didn't change over rerenders.
+                    it will still re-render when its own state changes.
+                    Wrap a component in memo to get a memoized version of that component. 
+                    ex: const MemoList = memo(function List(props) {...})
+
 
                 
 
