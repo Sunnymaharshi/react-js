@@ -353,9 +353,19 @@ root.render(<Heading />);
                 DOM is updated in one go
             after commit phase, workInProgress fiber tree becomes current tree for next render cycle
     
+    Preserving State and Resetting State
+        React keeps track of which state belongs to which component based on their place in the UI tree.
+        State is tied to a position in the render tree.
+        When you re-render a component, React needs to decide which parts of the tree to keep (and update), 
+        and which parts to discard or re-create from scratch.
+        By default, React preserves the parts of the tree that “match up” with the previously rendered component tree.
+        React lets you override the default behavior, and force a component to reset its state by passing it a different key
+        This tells React that if the recipient is different, it should be considered a different Chat component
+        that needs to be re-created from scratch
+    
     Key prop
         special prop that we use to tell Diffing Algorithm that an element is unique
-        distinguish btw multiple instances of same component
+        allows react to distinguish btw multiple instances of same component
         using keys in list 
             when key stays same across the renders, element will be kept in DOM 
             even if the position in the tree changes
