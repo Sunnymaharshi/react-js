@@ -274,7 +274,7 @@ root.render(<Heading />);
         move all components to top level by using children prop inside parent components 
         then pass the state to components which need it
         ex: in App component
-            <>
+            <Parent>
                 <Nav>
                     <Profile user={user} />
                 </Nav>
@@ -714,6 +714,34 @@ root.render(<Heading />);
         now react is controlling the state of input element
 
     Performance Optimization
+        Reduce wasted re-renders
+            wasted render 
+                render that didn't produce any change in DOM
+                react dev tools profiler can be used to find which component rendered and why it is rendered
+                component re-renders when 
+                    state changes 
+                    change in context that component is subscribed to
+                    parent component re-renders
+                        *changing props does not re-render the component
+                1. passing slow components as a children or through props to parent component
+                    when state is changed in parent component, it triggers re-render and 
+                    slow component inside parent also re-renders.
+                    if slow component doesn't depends on state of parent component
+                    we can pass the slow component as a children, 
+                    react first creates slow component and pass it to parent
+                    ex: <Parent>
+                            <Slow />
+                        </Parent>
+                    even if parent component is re-renders, since slow component is already created  
+                    and passed as a prop, react doesn't re-render slow component again
+                    *same happens in context change also, since we pass all child components as children 
+                    only components which are consuming the context gets re-rendered
+                        ex: <UserProvider>
+                                <App />
+                            </UserProvider>
+
+                
+
         App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
             load the component in a seperate bundle
             divide the bundle file into multiple smaller bundles  
