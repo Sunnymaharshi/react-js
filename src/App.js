@@ -335,10 +335,10 @@ root.render(<Heading />);
                         work can be split, prioritize, paused and resumed
                 Diffing 
                     comparing elements one by one based on their position in element tree (virtual DOM)
-                    same position different elements 
+                    same position, different element
                         different DOM element is created
                         old components are removed from DOM including state
-                    same position same elements
+                    same position, same element
                         element will be kept (as well as child elements), including state
                         we can use key prop to reset the state in this situation
                         new props/attributes are passed if they changed between renders
@@ -359,6 +359,8 @@ root.render(<Heading />);
         When you re-render a component, React needs to decide which parts of the tree to keep (and update), 
         and which parts to discard or re-create from scratch.
         By default, React preserves the parts of the tree that “match up” with the previously rendered component tree.
+        * changing props doesn't resets state (recreate component from scratch)
+            since same element at same position, react preserves the state
         React lets you override the default behavior, and force a component to reset its state by passing it a different key
         This tells React that if the recipient is different, it should be considered a different Chat component
         that needs to be re-created from scratch
