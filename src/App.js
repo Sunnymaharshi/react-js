@@ -536,6 +536,36 @@ root.render(<Heading />);
             file and hook name prefered to start with "use" 
             ex: custom hook to fetch the user data
 
+        Context API in react
+            prop drilling 
+                passing props through many components till target component
+            it solves props drilling
+            pass data throughout the app without manually passing props down the tree
+            Provider
+                gives all child components access to value
+                usually value will be state or functions
+                createContext Hook
+                    to create a context for the data 
+                    can create multiple contexts
+                    ex: const UserContext = createContext();
+                Provider 
+                    provide the context data to all children Components
+                    ex: <UserContext.Provider value={{username:"xyz"}}>
+                            <Main />
+                        </UserContext.Provider>
+            Consumer
+                all components that read the provided context value
+                whenever context value updated, all the consumer components will be re-rendered
+                useContext Hook
+                    to access the created context data
+                    returns an object with data
+                    ex: const user_data = useContext(UserContext) 
+                Consumer (older way to consume data)
+                    <UserContext.Consumer>
+                        {username => (
+                            <Main data={user_data} />
+                        )}
+                    </UserContext.Consumer>
                 
 
     React Router Dom 
@@ -606,7 +636,10 @@ root.render(<Heading />);
             }
             Outlet component
                 children route component is rendered in place of this Outlet
-        
+        Protected Routes 
+            create a component and check auth in useEffect, 
+            navigate to home if user is unauthenticated
+            Make this component parent of all protected route components
 
 
     CSS Modules 
@@ -680,7 +713,7 @@ root.render(<Heading />);
         in react, we give state to these input elements, 
         now react is controlling the state of input element
 
-    Optimization
+    Performance Optimization
         App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
             load the component in a seperate bundle
             divide the bundle file into multiple smaller bundles  
@@ -703,23 +736,7 @@ root.render(<Heading />);
         then child is controlled component
     Uncontrolled Components
         if component has it's own state and not controlled by it's parent
-
-    props drilling 
-        passing props through many components till target component
-    useContext in react
-        solves props drilling
-        lets a parent component provide data to the entire tree below it
-        createContext
-            to create a context for the data 
-            can create multiple contexts 
-        useContext
-            to access the created context data
-            returns an object with data
-        Context_Name.Consumer component
-            to access the data in context            
-        Context_Name.Provider component
-            to update the data in context
-            all the child components inside the Provider can access the data 
+ 
     
     Redux 
         3rd party library alternative to useContext
