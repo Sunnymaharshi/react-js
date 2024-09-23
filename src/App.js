@@ -538,8 +538,16 @@ root.render(<Heading />);
             takes function whose result to be cached, and dependencies for that function
             so it will run that function only when it's dependencies are changed
             it will prevent re-running the heavy functions when re-render is triggered by other
-        useCallback hook 
-            lets you cache a function defination between re-renders
+        useCallback hook
+            same as useMemo expect it 
+            lets you cache a function defination between re-renders 
+        useMemo and useCallback use cases 
+            Memoize props to prevent wasted re-renders (together with memo function)
+            Memoize values to avoid expensive re-calculations on every render
+            Memoizing values that are used in dependency array of different Hook
+            React by default memoizes state settter functions (setState)
+            * only use these when it truly improves the performance, do not use these everywhere 
+            as these needs to cached in memory
         custom Hooks 
             re-using non-UI logic which uses Hooks
             compose multiple hooks into our own custom Hook
@@ -736,27 +744,34 @@ root.render(<Heading />);
                     parent component re-renders
                     *changing props does not resets state (recreate component from scratch)
                     since same element at same position in element tree, react preserves the state
-                1. passing slow components as a children or through props to parent component
-                    Assume we have a very slow component that performs an expensive "calculation" or "renders" a huge List
-                    when state is changed in parent component, it triggers re-render and 
-                    slow component inside parent also re-renders.
-                    if slow component doesn't depends on state of parent component
-                    we can pass the slow component as a children, 
-                    react first creates slow component and pass it to parent
-                    ex: <Parent>
-                            <Slow />
-                        </Parent>
-                    even if parent component is re-renders, since slow component is already created  
-                    and passed as a prop, react doesn't re-render slow component again
-                    *same happens in context change also, since we pass all child components as children 
-                    only components which are consuming the context gets re-rendered
-                        ex: <UserProvider>
-                                <App />
-                            </UserProvider>
-                2. memo 
+            1. passing slow components as a children or through props to parent component
+                Assume we have a very slow component that performs an expensive "calculation" or "renders" a huge List
+                when state is changed in parent component, it triggers re-render and 
+                slow component inside parent also re-renders.
+                if slow component doesn't depends on state of parent component
+                we can pass the slow component as a children, 
+                react first creates slow component and pass it to parent
+                ex: <Parent>
+                        <Slow />
+                    </Parent>
+                even if parent component is re-renders, since slow component is already created  
+                and passed as a prop, react doesn't re-render slow component again
+                *same happens in context change also, since we pass all child components as children 
+                only components which are consuming the context gets re-rendered
+                    ex: <UserProvider>
+                            <App />
+                        </UserProvider>
+            2. Memoization
+                Optimization technique that executes a pure function once, and saves/caches result in memory
+                if we try to execute same arguments as before, saved result will be returned without executing func again
+                memo function in react
+                    Memoize components. it is only for props, if state changes, component will rerender
+                    used to create a component that will not re-render when it's parent re-renders as long as 
+                    props stay same btw rerenders
                     above optimization can be achived with memo function also
                     lets you skip re-rendering a component when its props are unchanged.
                     But React may still re-render it: memoization is a performance optimization, not a guarantee.
+                    only memoize heavy or slow rendering components
                     component argument
                         component that you want to memoize
                     arePropsEqual argument (optional)
@@ -770,9 +785,18 @@ root.render(<Heading />);
                     it will still re-render when its own state changes.
                     Wrap a component in memo to get a memoized version of that component. 
                     ex: const MemoList = memo(function List(props) {...})
-
-
-                
+                    Issues with memo function
+                        In react, everything is re-created on every render including objects and functions
+                        In JS, two objects or functions that look the same, are actually different (memory location is different)
+                        if objects or functions are passed as props, child component will always see them 
+                        as new props on each re-render 
+                        if props are different, memo won't work 
+                    Fix 
+                        we can use useMemo and useCallback to memoize objects and functions
+                useMemo Hook 
+                    Memoize objects
+                useCallback
+                    Memoize functions               
 
         App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
             load the component in a seperate bundle
