@@ -804,17 +804,22 @@ root.render(<Heading />);
                 so all the comsumers of Provider will re-render 
                 memoize the value object using useMemo to prevent wasted context re-renders 
 
-        App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
+        Code Splitting / lazy loading / App Chunking / Dynamic Bundling / ondemand loading
+            spliting bundle into multiple parts that can be downloaded over time when needed 
+            this process of loading code sequentially is called "lazy loading"
             load the component in a seperate bundle
             divide the bundle file into multiple smaller bundles  
             'lazy' function in react 
                 split the component code into seperate bundle file 
-                component import is passed as argument to lazy function
+                component import callback function is passed as argument to lazy function
+                ex: const Home = lazy(()=> import('./Home'))
             'Suspense' component in react 
-                used to defer component loading until bundle file is downloaded
+                used to defer/suspend component loading until bundle file is downloaded
                 fallback attribute
                     takes JSX/Component 
-                    fallback JSX is rendered until bundle file is downloaded
+                    fallback component is rendered until bundle file is downloaded
+                    usually spinner components are used for fallback to show loading
+            while building, bundler will create seperate bundle files for these components
 
     Higher Order Components 
         Component that takes a component and returns a component
