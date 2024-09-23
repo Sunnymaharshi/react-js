@@ -586,6 +586,7 @@ root.render(<Heading />);
                             <Main data={user_data} />
                         )}
                     </UserContext.Consumer>
+            create different contexts for different states to prevent wasted re-renders
                 
 
     React Router Dom 
@@ -796,7 +797,12 @@ root.render(<Heading />);
                 useMemo Hook 
                     Memoize objects
                 useCallback
-                    Memoize functions               
+                    Memoize functions   
+            
+            3. Optimize context re-renders
+                if parent of Provider re-renders, value we're passing through Provider also will be re-created
+                so all the comsumers of Provider will re-render 
+                memoize the value object using useMemo to prevent wasted context re-renders 
 
         App Chunking / Code Splitting / Dynamic Bundling / lazy loading / ondemand loading
             load the component in a seperate bundle
