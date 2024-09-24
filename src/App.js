@@ -480,6 +480,25 @@ root.render(<Heading />);
                     callback will be called only on initial render (just once)
                 non-empty dependency array 
                     callback will be called on initial render and when any of dependencies changes.
+                    dependency array should include
+                        all state variables, props and context values used inside useEffect
+                        reactive values 
+                            all above values and any functions/variables that references these values 
+                        Do not use Objects or Arrays as dependencies
+                            since objects are re-created on each render, and react sees new object as different
+                    reduce dependencies
+                        no need to include setState or dispatch functions in dependencies as React guarantees them to be state across renders
+                        remove function dependencies
+                            move function into the effect
+                            if function is needed in multiple places, memoize it 
+                            if function doesn't reference any reactive values, move it out of component
+                        remove object dependencies
+                            include only object properties in dependencies
+                            if it is not possible, move object out of component or memoize it
+                        other 
+                            if u have multiple reactive values as dependencies, try using a reducer instead of useState.
+                            this will reduce the reactive values
+                            
             cleanup function (optional)
                 u can return a function in useEffect to cleanup 
                 it forms a closure with callback function, it can access callback variables/functions
