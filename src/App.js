@@ -858,42 +858,106 @@ root.render(<Heading />);
  
     
     Redux 
-        3rd party library alternative to useContext
-        it is not mandatory
-        it is used to manage state in JS Apps
+        3rd party library to manage global state (ui state/client side)
+        alternative to useContext + useReducer
+        it is not mandatory, use only when u are managing large global state
         easy to debug, redux devtools extension shows actions, trace and state visual etc
     React-Redux
         for react 
     Redux toolkit (RTK)
         gives a standard way of writing redux logic 
-    Redux store 
-        Big JS object stored in global central space 
+        modern way of writing redux
+        lot less code than classic redux 
+        follows best practices
+        classic redux and toolkit are compatible with each other,
+        we can change some code to toolkit and redux works fine
+        Redux store 
+            Big JS object stored in global central space
+            configureStore is used to create a store
+            all slices reducers will be added to store
+            automatically adds thunk Middleware to the store
+            ex:appStore = configureStore({
+                reducer: {
+                    counter: counterReducer,
+                },
+            })
+        Provider
+            wrap parent component we want to share the store with Provider
+            pass appStore into store prop
         slice 
             small portion in redux store 
-            act as a partitions to seperate the data 
+            used to separate data and it's actions & reducers according to it's usage
             in config, it has data and actions with corresponding reducer functions
             export actions and reducer
             add this reducer in appStore reducer 
-        to write data 
-            dispatch 'action' 
-                after clicking on add button it's dispatch an 'action'
-                which calls a function('reducer') which updates slice of redux store 
+            ex: userSlice, accountSlice etc
             reducer function
+                must be a pure function (no side effects)
                 takes state and action as an arguments 
                 state is current state of slice
-                action have data in payload attribute
-                used to update the data 
-            *Only modify the state object, don't change the reference of state object
-            otherwise state won't be updated because redux uses immer library internally
+                action object have data in payload attribute
+                contains logic for updating store as per the action
+                *Only modify the state object, don't change the reference of state object
+                otherwise state won't be updated because redux uses immer library internally
+                to change total state, return new state in the reducer
+                ex: userSlice = createSlice({
+                    name:'user',
+                    initialState,
+                    reducers:{
+                        createUser: (state,action)=>{...}
+                    }
+                })
+                prepare function
+                    used to send custom arguments to reducer 
+                    take payload and returns new arguments to reducer
+        to write data 
+            useDispatch Hook 
+                returns dispath function which is used to dispatch an 'action' 
+                takes an action and payload as arguments
+                ex: dispatch(createUser(),{username:"Sunny"})            
         to read data 
-            selector 
-                it is useSelector Hook
+            useSelector Hook 
                 to subscribe to the store data
                 reads data from slice of redux store
-                when data in store changes, it automatically updates the component
+                when data in store changes, it automatically re-renders the component which subscribed to that data
                 *Only subscribe the data that is needed inside the component (Optimization)
-        useDispatch hook 
-            to dispatch an action 
+                ex: data = useSelector((store)=>store.user)  
+        Redux Middleware 
+            sit between dispatching the action and store
+            allows u to run code after dispatching but before reaching the reducer in the store 
+            used for 
+                async operations
+                    like API fetch as we can't have side effects in reducers
+                timers,logging etc 
+                place for side effetcs
+            Redux Thunk 
+                allow us to write additional Redux-related logic separate from a UI layer. 
+                used to write async operations and other side effetcs
+                configure thunk in redux store 
+                ex: appStore = configureStore({
+                    reducer: {
+                        counter: counterReducer,
+                    },
+                    applyMiddleware(thunk)
+                })
+                we will return a async function inside reducer instead of state
+                redux will see it as a Thunk 
+                this function will receive dispatch and getState functions as arguments
+                after fetching, we can call this dispatch to update the store
+
+        Context + Reducer vs Redux
+            Context 
+                built into react
+                easy to setup
+                additional slice requires new context setup from scratch
+                no support for async operations
+            Redux 
+                additional library (increases bundle size)
+                more work to setup
+                additional slice is easy to create 
+                Supports Middleware for async operations
+
+                
     
     Testing 
         Unit testing 
