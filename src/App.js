@@ -611,23 +611,24 @@ root.render(<Heading />);
     React Router Dom 
         createBrowserRouter
             used to create config for all paths with associated components
-            errorElement
-                if any error comes this element will render
-                it will given for path '/'
+            Error handling
+                if any error comes, a component can be shown.
+                component to show when error comes is given in errorElement property
                 ex:to render 404 page component if path is not found  
                 useRouteError Hook
                     it gives more info about error      
-            children routers 
-                children property inside a path object
-                it takes array of path objects 
-                'Outlet' will be replaced with children according to the path
-            ex: router = createBrowserRouter([
+                ex: router = createBrowserRouter([
                     {
                         path: "/",
                         element: <Home />,
                         errorElement: <ErrorPage />,
                     },
-                ]);    
+                ]);
+            children routers 
+                children property inside a path object
+                it takes array of path objects 
+                'Outlet' will be replaced with children according to the path
+               
         RouterProvider
             it will take createBrowserRouter variable as an argument
             we render this on root element instead of App component
@@ -680,6 +681,23 @@ root.render(<Heading />);
             create a component and check auth in useEffect, 
             navigate to home if user is unauthenticated
             Make this component parent of all protected route components
+        Loaders
+            used to fetch data and pass data to the component on particular route
+            as soon as we go to the route, loader will run along with component rendering 
+            we pass the function which fetches data to path using loader property
+            ex: {
+                path:"/",
+                element:<Home />
+                loader: dataLoader
+            }
+            useLoaderData Hook 
+                to get the data in component that has been fetched by loader
+        useNavigation Hook 
+            used to know if any of the component is loading in the app 
+            returns an object which include state property
+            state 
+                idle 
+                loading
 
 
     CSS Modules 
