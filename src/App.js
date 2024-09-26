@@ -692,6 +692,8 @@ root.render(<Heading />);
             }
             useLoaderData Hook 
                 to get the data in component that has been fetched by loader
+        useFetcher Hook 
+            used to fetch data of a route without navigating to that route
         useNavigation Hook 
             used to know if any of the component is loading in the app 
             returns an object which include state property
@@ -962,6 +964,16 @@ root.render(<Heading />);
                 redux will see it as a Thunk 
                 this function will receive dispatch and getState functions as arguments
                 after fetching, we can call this dispatch to update the store
+                createAsyncThunk
+                    to create async thunk
+                    takes action name and async function as arguments
+                extraReducers
+                    to configure async thunk to slice
+                    builder 
+                        lets u handle cases for thunk 
+                        like loading, fulfilled and rejected etc
+
+
 
         Context + Reducer vs Redux
             Context 
