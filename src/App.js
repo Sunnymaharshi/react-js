@@ -773,6 +773,15 @@ root.render(<Heading />);
         in react, we give state to these input elements, 
         now react is controlling the state of input element
 
+    Portal in react-dom 
+        used to place the component anywhere in the DOM tree.
+        it does not change React component tree
+        createPortal function
+        1st argument
+            JSX 
+        2nd argument
+            element in which u want to render the JSX
+            ex: document.body
     Performance Optimization
         Reduce wasted re-renders
             wasted render 
@@ -972,9 +981,7 @@ root.render(<Heading />);
                     builder 
                         lets u handle cases for thunk 
                         like loading, fulfilled and rejected etc
-
-
-
+                        
         Context + Reducer vs Redux
             Context 
                 built into react
@@ -986,6 +993,44 @@ root.render(<Heading />);
                 more work to setup
                 additional slice is easy to create 
                 Supports Middleware for async operations
+
+    React Query library
+        used to manage remote(server) state 
+        Data is stored in cache 
+        Automatic loading and error states 
+        Automatic re-fetching to keep state synched 
+        Pre-fetching data (data that will be used in future)
+        Easy remote state updation 
+        Offline support
+    
+    Advanced React Patterns
+        Reusability
+            UI 
+                components and props
+                children prop 
+                    to customize component content 
+            Stateful Logic 
+                Custom Hooks
+        Render Props pattern
+        Higher Order component pattern
+        Compound component pattern 
+            set of related components together achieve a task
+            uses Context API
+            1.create context
+            2.create parent component
+            3.create child components 
+            4.provide context to parent
+            5.use context in child components to access parent data
+            6.add child components as properties to parent component
+            flexible in positioning child components
+            use case: Modal component, Counter component
+            example:
+                <Counter>
+                    <Counter.Label>
+                    <Counter.Decrease icon="-"/>
+                    <Counter.Count />
+                    <Counter.Increase icon="+"/>
+                </Counter>
 
                 
     
