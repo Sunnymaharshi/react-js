@@ -897,7 +897,7 @@ root.render(<Heading />);
             <ErrorBoundary FallbackComponent={ErrorComponent}>
                 <App />
             </ErrorBoundary>
-            
+
     Redux 
         3rd party library to manage global state (ui state/client side)
         alternative to useContext + useReducer
@@ -1132,6 +1132,28 @@ root.render(<Heading />);
             Less Interactive
                 Pages might be downloaded on demand and require full page reloads 
     
+    Next.js
+        React Framework
+        Built on top of React 
+        Opinionated way of building react apps 
+            no need to install extra libraries like react-router-dom etc 
+        Features 
+            Server Side Rendering 
+                Dynamic or static can be selected for each route
+            File-Based Routing Conventions
+                Folders as routes 
+                Special files for pages,layouts,loaders etc
+                Types 
+                    App Router 
+                    Pages Router (legacy)
+            Data Fetching and Mutation on Server
+                Fetching data directly in Server components
+                Mutations in Server Actions 
+            Optimizations
+                Images,Fonts,SEO,Preloading
+        
+
+
             
 
 
