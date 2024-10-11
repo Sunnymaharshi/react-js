@@ -885,7 +885,19 @@ root.render(<Heading />);
     Uncontrolled Components
         if component has it's own state and not controlled by it's parent
  
-    
+    React Error Boundaries
+        to avoid white screen whenever error comes in our app
+        we can give a fallback component to render when error comes 
+        it only catches errors while react is rendering
+        it does not catch errors in event handlers and useEffect etc
+        react error boundary library
+            component receives error info and resetErrorBoundary function as a props 
+            resetErrorBoundary is used to reset the app             
+            usage: 
+            <ErrorBoundary FallbackComponent={ErrorComponent}>
+                <App />
+            </ErrorBoundary>
+            
     Redux 
         3rd party library to manage global state (ui state/client side)
         alternative to useContext + useReducer
@@ -1086,19 +1098,41 @@ root.render(<Heading />);
 
      
 
+    Client side rendering (CSR)
+        HTML is rendered(generated) on client(browser) using JavaScript
+        best for highly interactive web apps
+        Apps that don't need SEO
+        Pros 
+            Highly Interactive 
+                all code and content has already been loaded (except data)
+        Cons 
+            Slow initial page loads 
+                bigger JavaScript bundle needs to be downloaded before app starts
+                Data fetched after components mounts
+            SEO might be problematic 
+                content is not generated until JS is downloaded and executed
+                so search engines might find a blank page when they try to index the site
+    Server side rendering (SSR)
+        HTML is rendered(generated) on server
+        best for Content-driven websites or apps where SEO is essential 
+        like E-commerce, blogs, news, marketing website etc
+        Types 
+            Static
+                HTML is generated at build time (only once)
+                static site generation
+            Dynamic
+                HTML is generated each time server receives new request                
+        Pros
+            Faster initial page loads 
+                Less JavaScript code needs to be downloaded and executed
+                Data is fetched before HTML is generated
+            SEO-friendly
+                Content is easier for search engines to index 
+        Cons 
+            Less Interactive
+                Pages might be downloaded on demand and require full page reloads 
     
-    
-
-        
-
-
-
-
-
-
-
-
-
+            
 
 
         
