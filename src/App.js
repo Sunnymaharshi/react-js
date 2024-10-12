@@ -1151,12 +1151,119 @@ root.render(<Heading />);
                 Mutations in Server Actions 
             Optimizations
                 Images,Fonts,SEO,Preloading
+        App Router
+            creates routes automatically based on folder structure
+            pages and components needs to be defined inside "app" folder
+            ex: app/home/page.js 
+            layouts
+                file convention layout.js
+                pages will automatically passed as children to the layout
+            pages
+                file convention about/page.js
+                this folder structure will create route for about                
+            components
+                file convention components/Navigation.js
+
+            Link component
+                similar to Link in react-router-dom 
+                here we use "href" instead of to for path
         
+        Cons of normal react components (100% Client-Side)
+            require lot of JS code need to be downloaded
+            Client server data waterfall
+                when data from one component depends on data fetched in another component
+        Server side rendering (100% Server-Side)
+            No components
+            easy and fast to fetch all data 
+            close to data source
+            Needs to ship 0kb of JS code
 
-
+        React Server Components(RSC)
+            new full-stack architecture for React apps
+            we write frontend code next to backend code
+            RCS is not active by default in new React apps like vite apps,create-react-app etc 
+            it needs to be implemented by a framework like Next.js(app router), Remix etc
+            Server-client Boundary 
+                when we use "use client;" in a component,
+                all it's child components also become client component
+                so this will become boundary between server and client components
+            Client Component
+                must add "use client" in a component to make it client side component
+                regular react components
+                usage:components that have interactivity (JS code)
+                1.Have State or Hooks
+                2.Have lifting state up
+                3.Have Props
+                4.Data Fetching is possible
+                5.Can Import
+                    Only client components
+                    can't cross client-server boundary
+                6.Can Render
+                    Client and server components passed as props
+                7.When re-render?
+                    On State change
+            Server Components
+                default components in apps that use RSC architecture like Next.js 
+                components that are only rendered on the server
+                don't make it to bundle(0kb)                               
+                usage: components that doesn't have interactivity (no JS code)
+                1.Don't have State or Hooks
+                2.Don't Have lifting state up
+                3.Have Props 
+                    but must be serializable when passed to client components
+                    No functions or classes (not serializable)
+                4.Data Fetching is possible
+                    Preferred in server components
+                5.Can Import 
+                    Client and server components
+                6.Can Render
+                    Client and server components
+                7.When re-render?
+                    On URL change (navigation)
             
-
-
+            React Server Components(RSC) Architecture Pros and Cons 
+                Pros 
+                    can build entire full stack apps with React components alone (+ server actions)
+                    One single code base for frontend and backend
+                    Server components have more direct and secure access to data source 
+                        no API, no exposing API keys 
+                    Eliminate client-server waterfalls 
+                        by fetching all data needed for a page at once before sending it to client
+                    Disappearing code 
+                        server components ship 0 JS code 
+                        so they can import huge libraries without increasing bundle size 
+                Cons 
+                    Makes React more complex 
+                    More things to learn 
+                    Things like Context API don't work in server components
+                    More decisions for choosing btw server and client for components and data fetching 
+                    Sometimes U still need to build an API (for ex if u have a mobile app)
+                    can only be used within a framework
+            React Server Components(RSC) works behind the scenes
+                how component tree (both client and server components) renders?
+                render phase is split into two steps
+                1.Server-Side
+                    first all server components will render in server  
+                        server component code disappears 
+                        that's why we can't have state or hooks in server components 
+                        output: React Element for each server Component
+                        now component tree holds React Elements for all server Components
+                    "Hole" or placeholder for client components
+                        client components in component tree will have a placeholder(Hole) 
+                        where client components will render 
+                        each of these Hole or placeholder holds 
+                            Serialized props passed from Server components to client components
+                            URL to script which contains code of the client component
+                    RSC Payload 
+                        output of above steps 
+                        virtual DOM of SCs + Component Trees of CCs 
+                        this is sent to client (browser)
+                2.Client-Side 
+                    client components in RSC Payload will run in client
+                    leads to complete Virtual DOM 
+                These steps don't wait for one another, completed render work is streamed to client
+                Now this vDOM commits to form actual DOM Elements 
+                
         
 */
 
