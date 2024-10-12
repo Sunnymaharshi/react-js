@@ -1155,18 +1155,34 @@ root.render(<Heading />);
             creates routes automatically based on folder structure
             pages and components needs to be defined inside "app" folder
             ex: app/home/page.js 
+            to opt out route for a folder, we can add _ before folder name
+            usage: components folders which does not need route
             layouts
                 file convention layout.js
                 pages will automatically passed as children to the layout
+                this return html tag with body tag inside of it
+                we can define site metadata in layout by exporting a metadata object
+                we can do same for other pages also to define custom metadata
+                ex: export const metadata = {
+                    title:"My website"
+                }
             pages
                 file convention about/page.js
                 this folder structure will create route for about                
             components
-                file convention components/Navigation.js
-
+                file convention _components/Navigation.js
             Link component
                 similar to Link in react-router-dom 
                 here we use "href" instead of to for path
+            loading.js file 
+                render this component while loading 
+                this file in app folder used as global loading component
+                this file in a folder/route used as loading component for that route
+            Nested Routes 
+                to create a nested routes inside a route 
+                we simple create a layout file in that folder/router
+                children property is used to get child route component inside layout 
+                like Outlet in react-router-dom
         
         Cons of normal react components (100% Client-Side)
             require lot of JS code need to be downloaded
@@ -1263,7 +1279,17 @@ root.render(<Heading />);
                     leads to complete Virtual DOM 
                 These steps don't wait for one another, completed render work is streamed to client
                 Now this vDOM commits to form actual DOM Elements 
-                
+        Image Optimization
+            Image component in next js 
+            convert format to webp 
+            automatically decide resolution based on screen size
+            reduces size 
+            lazy loads images 
+            images hosted in elsewhere (URLs)
+                configure the image URL in next.js config 
+                using remotePatterns in images object
+            
+
         
 */
 
