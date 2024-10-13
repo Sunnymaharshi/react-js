@@ -1173,16 +1173,44 @@ root.render(<Heading />);
                 file convention _components/Navigation.js
             Link component
                 similar to Link in react-router-dom 
-                here we use "href" instead of to for path
-            loading.js file 
-                render this component while loading 
-                this file in app folder used as global loading component
-                this file in a folder/route used as loading component for that route
+                here we use "href" instead of to for path            
             Nested Routes 
                 to create a nested routes inside a route 
                 we simple create a layout file in that folder/router
                 children property is used to get child route component inside layout 
                 like Outlet in react-router-dom
+            Dynamic routes 
+                create folder with name like "[userId]" and page.js inside it
+                here userId is used to get dynamic value in that route 
+                "params" prop will have this dynamic value with name we given to tha folder
+
+            loading.js file 
+                render this component while loading route/page
+                this file in app folder used as global loading component
+                this file in a folder/route used as loading component for that route
+            React Suspense
+                is used to have fallback component while lazy loading the component
+                it is hard to implemente Suspense for async operations (fetching data) in component
+                so we use libraries like React Query, Next.js
+            React Suspense in NextJS 
+                we can use Suspense component to have a fallback component(loading comp)
+                while data fetching (Async) inside a component  
+                used for component(SC/CC) level loading as we have loading.js file for route level
+            Creating API Endpoints with "Route Handlers" 
+                create new folder without page.js
+                create route.js file
+                export async GET or POST functions
+        Error Boundaries
+            error.js in app folder for global error boundary
+            must be a client component
+            whenever application encounters an error this error.js component will be rendered
+            we can error boundaries for pages/routes same way
+            only rendering errors caught here 
+            errors in event handlers, useEffect can't be caught here
+            not found errors 
+                for invalid URLs we can have not-found.js file in app folder
+                to manually trigger the this, we use notFound() function from NextJS 
+                we can define this for pages/routes same way
         
         Cons of normal react components (100% Client-Side)
             require lot of JS code need to be downloaded
@@ -1279,6 +1307,112 @@ root.render(<Heading />);
                     leads to complete Virtual DOM 
                 These steps don't wait for one another, completed render work is streamed to client
                 Now this vDOM commits to form actual DOM Elements 
+        Static Rendering 
+            HTML is rendered at built time, or periodically in background by 
+            refetching data (Incremental Static Regenration)
+            useful when data doesn't change more often and is not personalised to user 
+            usage: product page
+        Dynamic Rendering 
+            HTML is generated at request time
+            used when data changes frequently and is personalised to user 
+        When NextJS Switches to Dynamic Rendering
+            NextJS will automatically switch to dynamic rendering 
+            1.when route has dynamic segment (uses params)
+            2.searchParams are used in the page component
+            3.headers or cookies used in any of route's server component
+            4.uncached data request is made in any of routes server component
+            we can force Next.js to render a route dynamically
+                1.export const dynamic = 'force-dynamic'; from page.js
+                2.export const revalidate = 0; from page.js
+                3.{cache:'no-store'} added to fetch request in any of route's server components
+                4.noStore() in any of route's server components
+        Converting Dynamic routes to static 
+            we use generateStaticParams() to provide all possible values for dynamic route 
+            ex: export function  generateStaticParams() {
+                return [
+                    {userId:'1'},
+                    {userId:'2'},
+                    {userId:'3'}
+                ]
+            }
+            here userId is dynamic value in the route
+            Next.js will prerender all the dynamic routes
+            usefull when we have finite set of values for the dynamic routes
+        Static Site Generation (SSG)
+            if all routes in app are static, we can generate static site code 
+            next.js can generate static build for the app.
+        Partial Pre-Rendering  (PPR) (experimental)
+            Most pages don't need to be 100% static or 100% dynamic
+            this strategy combine both static and dynamic rendering in same route 
+            A pre-rendered (static) page is served immediately from a CDN, leaving holes for dynamic content
+            need to be turned on in next.js config 
+            Dynamic components should be placed inside Suspense
+        Caching in NextJS
+            NextJS caches very aggressively, everything that is possible to cache, is cached 
+            NextJS provides APIs for cache revalidation
+                removes data from cache and updating it with fresh data 
+            Makes app more performant and saves costs 
+            Caching is always on by default
+            Caching happens in production env only not in development env
+            Mechanisms
+                Request Memoization 
+                    kept in server
+                    Data fetched with fetch function
+                    Cached for One page request (one render, one user)
+                    same fetch in multiple components only makes one request
+                    Only in components, not in route handlers and server actions 
+                    revalidate: NA
+                    opt out:AbortController
+                Data Cache 
+                    kept in server
+                    Data fetched in a route or a single fetch request
+                    Caches Indefinitely, even across de-deploys 
+                    can revalidate or opt out 
+                    used to Data for static pages + ISR(incremental static regeneration) when revalidated
+                    revalidate
+                        this revalidates Full Route Cache also
+                        time based (Automatic) for all data on page 
+                            export const revalidate = 60; (page.js)
+                        time based for one data request
+                            fetch('...',{next:{revalidate: 60}})
+                        ondemand (manual)
+                            revalidatePath or revalidateTag
+                    opt out
+                        forces entire page dynamic
+                        also opts out Full Route Cache
+                        for entire page 
+                            export const revalidate = 0; (page.js)
+                            or 
+                            export const dynamic = 'force-dynamic'; (page.js)
+                        for single request
+                            fetch('...',{cache:'no-store'})
+                        for server component
+                            noStore()
+                Full Route Cache
+                    kept in server
+                    Entire static page (HTML + RSC payload)
+                    cached until "Data cache" is revalidated or app re-deployed
+                    used for static pages 
+                    revalidate or opt out are same as Data Cache                   
+                Router Cache 
+                    kept in client (browser)
+                    Pre-fetched and visited pages both static and dynamic
+                    stored 30sec (for dynamic) or 5min (for static) throughout one user session
+                    SPA like naviagtion
+                    revalidate
+                        revalidatePath or revalidateTag in Server Action 
+                        or
+                        router.refresh
+                        or
+                        cookies.set or cookies.delete
+                    opt out
+                        Not possible
+        Incremental Static ReGeneration (ISR)
+            it is in between of static and dynamic pages 
+            data is fetched in intervals to keep page updated
+            ex: export const revalidate = 3600;
+            here page is regenerated every hour in server,
+            when user revisits site, will get new page
         Image Optimization
             Image component in next js 
             convert format to webp 
@@ -1289,8 +1423,73 @@ root.render(<Heading />);
                 configure the image URL in next.js config 
                 using remotePatterns in images object
             
+        Next.js with RSC + Server Actions (SA)
+            No clear separation btw frontend and backend
+            allows u to build full stack applications in just one codebase 
+            No need for an intermediary API in many times 
+        Server component inside client component
+            it is possible to have server component inside client component 
+            using props/children as server components are already executed
+        Importing vs Rendering
+            client components 
+                can import 
+                    client components
+                can render 
+                    server components (passed as props)
+                    client components 
+            server components
+                can import and render both server and client components
+                it can be both server and client component
+                rendering server component inside client component                  
+                    if server component imported first in server component and later if we render it inside 
+                    a client component it will become client component
+                    ex: import the server component in another server component/page 
+                    then pass that server component to client component as prop 
+                    now client component can render this server component
+        Middleware in Next.js 
+            by default, it always runs before every app routes 
+            we can specify which paths using a matcher
+            ex:middleware.js in project root folder
+            it needs to produce a response
+            we can 
+                redirect or rewrite to a route 
+                send response directly (like json)
+            used for 
+                read and set cookies and headers 
+                Authentication and Authorization
+                Server-side analytics 
+                Redirect Based on geolocation
+                A/B testing
+        Server Actions 
+            make interactive full-stack applications
+            needs a running web server
+            Async functions that are exclusively run on server 
+            allows us to perform data mutations 
+            created with "use server" directive at top of the function or entire module
+                "use server" is only for sever actions, not for server components
+                it creates a bridge for client to connect to sever like Endpoint
+            can be used in server component or
+            passed to client components (unlike regular functions which is not posssible)
+            Behind the scenes
+                Next.js creates API Endpoint(with URL) for each server action 
+                when server action is called, a POST request is sent to it's URL 
+                the server action(function) itself never reaches client
+            can be called from 
+                action attribute in forms 
+                    useFormStatus Hook to show loading indicator
+                event handlers in client components 
+                    useTransition Hook to show loading indicator
+                useEffect in client components 
+            can perform 
+                data mutations 
+                Update UI with new data 
+                    revalidating cache using revalidatePath or revalidateTag
+                Work with cookies etc
+            
 
-        
+            
+
+
 */
 
 const App = () => {
