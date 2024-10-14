@@ -1212,6 +1212,34 @@ root.render(<Heading />);
                 to manually trigger the this, we use notFound() function from NextJS 
                 we can define this for pages/routes same way
         
+        Pages Router (legacy router) - App Router is latest and rocommended
+            all components are client components by default
+            creating routes 
+                create a file just with name of the route in pages folder
+                ex:pages/home.js 
+            root route 
+                index.js file in pages folder
+            nested routes 
+                create a folder with route name 
+                and we can create sub routes and index.js in it
+            dynamic routes 
+                create a file with dynamic variable name in brackets 
+                ex:pages/user/[userId].js
+            meta data 
+                passed in Page JSX using Next.js Head component 
+                ex:<Head><title>Home</title></Head>
+            getStaticProps function
+                whetever code is there in this function executed in server 
+                we export this function inside a component/page 
+                used for data fetching
+            getServerSideProps function
+                used for components which uses dynamic route 
+            API Routes 
+                used to mutate data in server 
+                create folder named api in pages folder 
+                we export a handler function to handle the requests
+
+
         Cons of normal react components (100% Client-Side)
             require lot of JS code need to be downloaded
             Client server data waterfall
