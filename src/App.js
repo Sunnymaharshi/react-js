@@ -1096,8 +1096,20 @@ root.render(<Heading />);
         }
     },[searchText])
 
-     
-
+    Typescript in React
+        Functional component
+            React.FC or React.FunctionComponent
+            must return JSX
+        Interface is used to define structure of objects like props
+        Generic function type for React.FC
+            React.FC<PropsInterface>
+        Generic function type for useState
+            useState<SomeInterface>()
+        
+    Webpack 
+        bundler
+        used to bundle the files together
+        optimizes the code (Minification)
     Client side rendering (CSR)
         HTML is rendered(generated) on client(browser) using JavaScript
         best for highly interactive web apps
