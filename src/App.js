@@ -694,6 +694,10 @@ root.render(<Heading />);
             }
             useLoaderData Hook 
                 to get the data in component that has been fetched by loader
+        Actions
+            can submit data to servers
+            Form component from react router is used 
+            
         useFetcher Hook 
             used to fetch data of a route without navigating to that route
         useNavigation Hook 
