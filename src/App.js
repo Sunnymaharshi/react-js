@@ -1,4 +1,4 @@
-import React, {lazy, Suspense, useEffect, useState} from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
@@ -12,7 +12,7 @@ import "./index.css";
 import UserContext from "./utils/UserContext";
 import appStore from "./utils/appStore";
 import Cart from "./components/Cart";
-const Grocery = lazy(()=> import('./components/Grocery'))
+const Grocery = lazy(() => import('./components/Grocery'))
 /*  
 React JS 
     It is a Javascript Library for web and native user interfaces.
@@ -62,9 +62,9 @@ React.createElement
 */
 
 const heading = React.createElement(
-  "h1",
-  { id: "heading" },
-  "Hello world from React Element"
+    "h1",
+    { id: "heading" },
+    "Hello world from React Element"
 );
 // console.log(heading);
 /* 
@@ -96,8 +96,8 @@ root.render(heading);
 */
 
 const siblings = React.createElement("div", { id: "parent" }, [
-  React.createElement("h2", { id: "child1",key:1 }, "child1"),
-  React.createElement("h2", { id: "child2",key:2 }, "child2"),
+    React.createElement("h2", { id: "child1", key: 1 }, "child1"),
+    React.createElement("h2", { id: "child2", key: 2 }, "child2"),
 ]);
 
 // root.render(siblings)
@@ -225,20 +225,20 @@ React Components
         Information necessary to create DOM elements
 */
 const Title = () => {
-  return <h1>Namaste React</h1>;
+    return <h1>Namaste React</h1>;
 };
 const data = "js data";
 const Heading = () => {
-  return (
-    <div>
-      <Title />
-      {jsx_heading}
-      {data}
-      <h1 id="heading-func-component">
-        Hello world from React Functional Component
-      </h1>
-    </div>
-  );
+    return (
+        <div>
+            <Title />
+            {jsx_heading}
+            {data}
+            <h1 id="heading-func-component">
+                Hello world from React Functional Component
+            </h1>
+        </div>
+    );
 };
 
 root.render(<Heading />);
@@ -384,6 +384,8 @@ root.render(<Heading />);
     Side Effect
         dependency on or modification of any data outside the function scope 
         ex: mutating external variables, HTTP requests, writing to DOM
+        ex: if we don't use useEffect for fetching data and updating ui, 
+        it will cause the function component run infinitely
     Pure function
         function without side effects
         given the same input, a pure function will always return same output
@@ -1534,55 +1536,55 @@ root.render(<Heading />);
 
 const App = () => {
 
-    const [userName,setUserName] = useState("default");
+    const [userName, setUserName] = useState("default");
 
-    useEffect(()=>{
+    useEffect(() => {
         // fetch user info  and update the context 
         setUserName("Sunny");
-    },[])
-  return (
-    <Provider store={appStore}>
-    <UserContext.Provider value={{loggedInUser:userName,setUserName}}>
-        <div className="app">
-        <Header />
-        <Outlet />
-        </div>
-    </UserContext.Provider>
-    </Provider>
-  );
+    }, [])
+    return (
+        <Provider store={appStore}>
+            <UserContext.Provider value={{ loggedInUser: userName, setUserName }}>
+                <div className="app">
+                    <Header />
+                    <Outlet />
+                </div>
+            </UserContext.Provider>
+        </Provider>
+    );
 };
 
 const appRouter = createBrowserRouter([
     {
-        path:'/',
-        element:<App />,
-        errorElement:<Error />,
-        children:[
+        path: '/',
+        element: <App />,
+        errorElement: <Error />,
+        children: [
             {
-                path:'/',
+                path: '/',
                 element: <Body />
             },
             {
-                path:'/about',
+                path: '/about',
                 element: <About />
             },
             {
-                path:'/contact',
+                path: '/contact',
                 element: <Contact />
             },
             {
-                path:'/grocery',
+                path: '/grocery',
                 element: <Suspense fallback={<h1>Huge component is loading</h1>}><Grocery /></Suspense>
             },
             {
-                path:'/restaurant/:resId',
+                path: '/restaurant/:resId',
                 element: <ResMenu />
             },
             {
-                path:'/cart',
+                path: '/cart',
                 element: <Cart />
             }
         ]
     }
 ])
-root.render(<RouterProvider router={appRouter}/>);
+root.render(<RouterProvider router={appRouter} />);
