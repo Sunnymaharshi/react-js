@@ -1091,14 +1091,51 @@ root.render(<Heading />);
     render()
         to render the Component
     screen
-        gives access to dom
-        must have await before functions 
-        findByRole() or findAllByRole()
-        find by tag name like button, heading etc
+        gives access to dom via query functions 
+        prefer to use ByRole always 
+        getByRole() or getAllByRole()
+        get by tag name like button, heading etc
         when multiple elements present use function with All
+        Aria Roles 
+            heading -> h1,h2,h3...
+            list -> ul, li 
+            button -> button 
+            link -> a 
+            textbox -> input, type='text'
+        getBy 
+            throw error if not found or found more than 1
+            used to prove element exists
+        queryBy 
+            returns null if not found or found more than 1
+            used to prove element not exists
+            since getBy throws error before assertion happens
+        findBy 
+            runs asynchronously (returns promise)
+            if not found throws error or found more than 1
+            checks until 1 sec is passed by default 
+        getAllBy
+            not found, throws error 
+        queryAllBy 
+            not found, return []
+        findAllBy 
+            not found, throws error
+        within
+            to find within an element
+            ex:within(screen.getByRole("form")).getByRole("textbox")
+    screen.logTestingPlaygroundURL()
+        logs url with html encoded
+        helps in finding right query functions
+        when u can't find right Role Query 
+            add data-testid attribute for parent and use within() or 
+            use querySelector
     expect()
-        asserts the condition
+        asserts the condition, comes from jest 
         ex: expect(titles).toHaveLength(6)
+        custom matcher 
+            can create function to match 
+            ex: expect.extend({customtoContainRole})
+    jest-dom library 
+        like toBeInTheDocument(), toHaveClass() etc 
     describe()
         is used to group multiple test cases 
     component with state updates and async testing 
@@ -1109,10 +1146,15 @@ root.render(<Heading />);
         it will run before all test cases run
     beforeEach 
         it will run before each test case runs 
+        not recommend to render in these functions
     afterAll 
         it will run after all test cases run
     afterEach 
         it will run after each test case runs 
+    Mock Functions 
+        fake function 
+        records whenever it get called, including arguments
+        used to asserts if function gets called with right arguments 
     
     
     //Debouncing in React,we create useState for search input value 
