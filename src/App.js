@@ -12,7 +12,7 @@ import "./index.css";
 import UserContext from "./utils/UserContext";
 import appStore from "./utils/appStore";
 import Cart from "./components/Cart";
-const Grocery = lazy(() => import('./components/Grocery'))
+const Grocery = lazy(() => import("./components/Grocery"));
 /*  
 React JS 
     It is a Javascript Library for web and native user interfaces.
@@ -62,9 +62,9 @@ React.createElement
 */
 
 const heading = React.createElement(
-    "h1",
-    { id: "heading" },
-    "Hello world from React Element"
+  "h1",
+  { id: "heading" },
+  "Hello world from React Element"
 );
 // console.log(heading);
 /* 
@@ -96,8 +96,8 @@ root.render(heading);
 */
 
 const siblings = React.createElement("div", { id: "parent" }, [
-    React.createElement("h2", { id: "child1", key: 1 }, "child1"),
-    React.createElement("h2", { id: "child2", key: 2 }, "child2"),
+  React.createElement("h2", { id: "child1", key: 1 }, "child1"),
+  React.createElement("h2", { id: "child2", key: 2 }, "child2"),
 ]);
 
 // root.render(siblings)
@@ -225,20 +225,20 @@ React Components
         Information necessary to create DOM elements
 */
 const Title = () => {
-    return <h1>Namaste React</h1>;
+  return <h1>Namaste React</h1>;
 };
 const data = "js data";
 const Heading = () => {
-    return (
-        <div>
-            <Title />
-            {jsx_heading}
-            {data}
-            <h1 id="heading-func-component">
-                Hello world from React Functional Component
-            </h1>
-        </div>
-    );
+  return (
+    <div>
+      <Title />
+      {jsx_heading}
+      {data}
+      <h1 id="heading-func-component">
+        Hello world from React Functional Component
+      </h1>
+    </div>
+  );
 };
 
 root.render(<Heading />);
@@ -1058,30 +1058,53 @@ root.render(<Heading />);
         Integration testing 
             testing multi components with are integrated/communicate each other 
         End to End (e2e) testing 
-            testing userflow 
-    React testing library
-        it uses DOM testing library and Jest internally
-        Jest 
-            JavaScript Testing Framework
-            Finding Tests
-            Running the tests
-            Determining whether the tests pass or fail
-        Setup(if not used create-react-app)
-            Jest need babel dependencies, which will conflict with babel in parcel 
-            configure babel for jest.
-            so override the default Parcel config for JavaScript to exclude @parcel/transformer-babel
-            this will configure parcel to disable Babel transpilation
-            This will allow other tools to continue using your Babel Config
-            Configure jest 
-            install jsdom 
-    it() is same as test() in test cases 
-    when multiple elements present use function with All to check in screen 
-    describe is used to group multiple test cases 
+            testing userflow like navigating to pages and perform actions
+    React testing library - @testing-library/react 
+        uses ReactDOM to render a component for testing 
+        like render, fireEvent, waitFor, screen
+        doesn't support E2E testing
+    @testing-library/user-event
+        simulate user input like typing and clicking
+        ex:user.click(btn_variable)
+    @testing-library/dom
+        find elements that are rendered
+    Jest 
+        JavaScript Testing Framework, open-source test runner
+        Finding Tests
+            files end with .spec.js or .test.js 
+            files inside __test__ folders 
+        Running the tests
+        Determining whether the tests pass or fail, test reports 
+        when u enter command npm test or npm run test it is jest responsibility that
+        collect all the files ending with .test.js and runs each test case and show
+        pass and fail results in your console
+    jsdom 
+        simulates a browser when running in a node environment 
+    test()
+        to write test case 
+        it() is same as test() in test cases 
+        ex: test("3 products should be present by default",  ()=>{// code to test})
+        Focusing and Excluding Tests
+            replace it with
+            xit() to temporarily exclude a test from being executed.
+            fit() lets you focus on a specific test without running any other tests.
+    render()
+        to render the Component
+    screen
+        gives access to dom
+        must have await before functions 
+        findByRole() or findAllByRole()
+        find by tag name like button, heading etc
+        when multiple elements present use function with All
+    expect()
+        asserts the condition
+        ex: expect(titles).toHaveLength(6)
+    describe()
+        is used to group multiple test cases 
     component with state updates and async testing 
         wrap render inside act function
     jest.fn()
         takes mock function as a callback in argument
-
     beforeAll 
         it will run before all test cases run
     beforeEach 
@@ -1539,56 +1562,59 @@ root.render(<Heading />);
 */
 
 const App = () => {
+  const [userName, setUserName] = useState("default");
 
-    const [userName, setUserName] = useState("default");
-
-    useEffect(() => {
-        // fetch user info  and update the context 
-        setUserName("Sunny");
-    }, [])
-    return (
-        <Provider store={appStore}>
-            <UserContext.Provider value={{ loggedInUser: userName, setUserName }}>
-                <div className="app">
-                    <Header />
-                    <Outlet />
-                </div>
-            </UserContext.Provider>
-        </Provider>
-    );
+  useEffect(() => {
+    // fetch user info  and update the context
+    setUserName("Sunny");
+  }, []);
+  return (
+    <Provider store={appStore}>
+      <UserContext.Provider value={{ loggedInUser: userName, setUserName }}>
+        <div className="app">
+          <Header />
+          <Outlet />
+        </div>
+      </UserContext.Provider>
+    </Provider>
+  );
 };
 
 const appRouter = createBrowserRouter([
-    {
-        path: '/',
-        element: <App />,
-        errorElement: <Error />,
-        children: [
-            {
-                path: '/',
-                element: <Body />
-            },
-            {
-                path: '/about',
-                element: <About />
-            },
-            {
-                path: '/contact',
-                element: <Contact />
-            },
-            {
-                path: '/grocery',
-                element: <Suspense fallback={<h1>Huge component is loading</h1>}><Grocery /></Suspense>
-            },
-            {
-                path: '/restaurant/:resId',
-                element: <ResMenu />
-            },
-            {
-                path: '/cart',
-                element: <Cart />
-            }
-        ]
-    }
-])
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <Error />,
+    children: [
+      {
+        path: "/",
+        element: <Body />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
+        path: "/grocery",
+        element: (
+          <Suspense fallback={<h1>Huge component is loading</h1>}>
+            <Grocery />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/restaurant/:resId",
+        element: <ResMenu />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
+    ],
+  },
+]);
 root.render(<RouterProvider router={appRouter} />);
