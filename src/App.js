@@ -1055,17 +1055,31 @@ root.render(<Heading />);
     Testing 
         Unit testing 
             testing just a single component or function
+            mock any dependencies, test only internals
+            testing done in isolation
         Integration testing 
             testing multi components with are integrated/communicate each other 
+        Behavioral Testing 
+            testing a behaviour, include all units in that behaviour 
         End to End (e2e) testing 
             testing userflow like navigating to pages and perform actions
+    Test Driven Development (TDD) - red green testing
+        write tests before writing code 
+        then write code to page the tests 
+
     React testing library - @testing-library/react 
+        creates virtual DOM for testing and utilities for interacting with DOM 
         uses ReactDOM to render a component for testing 
         like render, fireEvent, waitFor, screen
         doesn't support E2E testing
     @testing-library/user-event
         simulate user input like typing and clicking
+        sumulates events like user interaction 
+        uses fireEvent internally
+        prefer to use user-event instead of fireEvent
         ex:user.click(btn_variable)
+    fireEvent
+        dispatches exactly the events you tell it to
     @testing-library/dom
         find elements that are rendered
     Jest 
@@ -1078,6 +1092,10 @@ root.render(<Heading />);
         when u enter command npm test or npm run test it is jest responsibility that
         collect all the files ending with .test.js and runs each test case and show
         pass and fail results in your console
+    vitest 
+        test runner, alternative to jest 
+        no need to change tests code 
+        just configuration changes 
     jsdom 
         simulates a browser when running in a node environment 
     test()
@@ -1092,7 +1110,7 @@ root.render(<Heading />);
         to render the Component
     screen
         gives access to dom via query functions 
-        prefer to use ByRole always 
+        prefer to use ByRole always, to be sure app is following Accessibility
         getByRole() or getAllByRole()
         get by tag name like button, heading etc
         when multiple elements present use function with All
@@ -1122,12 +1140,17 @@ root.render(<Heading />);
         within
             to find within an element
             ex:within(screen.getByRole("form")).getByRole("textbox")
+    screen.debug()
+        prints the DOM
     screen.logTestingPlaygroundURL()
         logs url with html encoded
         helps in finding right query functions
         when u can't find right Role Query 
             add data-testid attribute for parent and use within() or 
             use querySelector
+    logRoles()
+        takes container returned by render()
+        logs all roles in the component
     expect()
         asserts the condition, comes from jest 
         ex: expect(titles).toHaveLength(6)
@@ -1138,6 +1161,7 @@ root.render(<Heading />);
         like toBeInTheDocument(), toHaveClass() etc 
     describe()
         is used to group multiple test cases 
+        nest the tests and run them isolated 
     component with state updates and async testing 
         wrap render inside act function
     jest.fn()
@@ -1155,8 +1179,21 @@ root.render(<Heading />);
         fake function 
         records whenever it get called, including arguments
         used to asserts if function gets called with right arguments 
-    
-    
+    Module Mocks 
+        fake component 
+        ex: jest.mock('./CardDetail.js',()=> 'fake comp')
+    Act() Functions 
+        react testing library uses it behind the scenes 
+        to solve act warnings use findBy or waitFor matchers 
+        we don't need to use it, if we are using RTL 
+        when there is eventually change in state, we wrap the test 
+        with ACT function 
+    Mock Service Worker (MSW)
+        API mocking library, to simulate server response 
+    Testing component wrapped in a Provider 
+        ex: render(<Home/>,{wrapper: UserProvider}) or 
+        can create custom render function with Provider  
+
     //Debouncing in React,we create useState for search input value 
     useEffect(()=>{
         const timer = setTimeout(()=>getSearchData(),300);
