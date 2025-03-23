@@ -17,8 +17,8 @@ const Grocery = lazy(() => import("./components/Grocery"));
 React JS 
     It is a Javascript Library for web and native user interfaces.
     React is fast because it does efficient DOM manipulation 
-    It uses Reconciliation Algorithm (React Fiber) to check diff of old and new virtual DOMs
-    and then it updates actual DOM
+    It uses Reconciliation Algorithm (React Fiber) to check diff of old and 
+    new virtual DOMs and then it updates actual DOM
     Library
         collection of pre-written code that can be used to perform specific tasks
         it only focuses on specific functionality
@@ -31,6 +31,14 @@ React JS
         it inlcudes almost everything u needed to develop the app
         framework is in charge of the flow. It provides some places for you to plug in your code, 
         but it calls the code you plugged in as needed.
+    React is Declarative 
+    Declarative 
+        telling what to do 
+        ex: using map function to iterate array 
+    Imperative 
+        telling what to do and how to do
+        ex: using for loop to iterate array 
+    React is Component based Architecture 
     web 
         react and react-dom let you build apps in react for web browsers 
     native
@@ -136,7 +144,7 @@ child2
         so we can ignore the node modules folder while pushing code to github
     npx 
         we use npm to install the package
-        npx is to execute or run the package
+        npx executes package without installing it 
         ex: npx parcel index.html
     scripts in package.json
         create custom commands
@@ -166,14 +174,21 @@ child2
             Different dev and prod bundles 
 */
 
-/*  JSX
-        HTML like syntax, it makes writing react code easy
-        not part of React
+/*  JSX - (JavaScript XML)
+        JSX allows us to write HTML in React. JSX makes it easier to write and add HTML 
+        in React.
         it is not valid Javascript
         it is transpiled by babel before it reaches JS Engine
         babel 
             converts JSX to React.createElement
             convert ES6+ Javascript to older browser understandable Javascript
+        old JSX transform
+            JSX => React.createElement(...)
+            so we need to import React in all components 
+        new JSX Transform (React 17+)
+            use JSX without importing React.
+            React 17 introduces two new entry points to the React package that are intended to only be used by compilers like Babel and TypeScript.
+            JSX => _jsx(...)
         final output is an object, since React.createElement returns JS object
         html attributes are written in camelCase
         all tags in JSX are self closing tags
@@ -421,8 +436,8 @@ root.render(<Heading />);
             wrapper around DOM's native event object
             'e' we get in event handler in react is a Synthetic event
             it fixes browser inconsistencies, so that events works same way in all browsers
-        default can not be prevented by returning false, only by preventDefault()
-        attach Capture to event, to handle in Capture phase like onClickCapture
+        default behavior can not be prevented by returning false, only by preventDefault()
+        use onClickCapture event, to handle event in Capture phase
     React Hooks 
         Normal Javascript utility functions in React
         allow us to Hook into React internals 
@@ -439,8 +454,11 @@ root.render(<Heading />);
             creates state variables
             takes initial value or a callback function which returns a initial value as an argument
             callback function 
-                aka lazy evaluation
+                aka lazy evaluation or lazy initial state
+                runs only on initial render
                 must be a pure function and doesn't take any arguments
+                useful to improve performance issues in some scenarios
+                usecase: when you have expensive process to initialize state 
             const for variables
                 const prevents reassignment and we don't want to manipulate state directly 
                 by reassigning it. We want to call the setter function to update state instead.
@@ -509,7 +527,7 @@ root.render(<Heading />);
                 and when component is removed/unmounted
                 usage: removing setTimeout or setInterval, unsubscribing subscriptions, removing event listeners etc 
                 we can cancel/abort the fetch request in cleanup function using AbortController browser API
-        layoutEffect 
+        uselayoutEffect Hook
             it runs before browser paint (component rendered on the browser)
             not used much
         useRef Hook 
@@ -569,6 +587,23 @@ root.render(<Heading />);
             React by default memoizes state settter functions (setState)
             * only use these when it truly improves the performance, do not use these everywhere 
             as these needs to cached in memory
+        useDeferredValue Hook 
+            lets you defer updating a part of the UI.
+            takes value, initialValue?
+            it defers the value u have passed 
+            ex: const [query, setQuery] = useState('');
+            const deferredQuery = useDeferredValue(query);
+            React will first attempt a re-render with the old value (so it will return the old value), and then try another re-render in the background with the new value (so it will return the updated value).
+            it always trys to render with latest value in background
+            if value is updated, it stop previous render and renders again with new value 
+            in background
+        useTransition Hook 
+            lets you render a part of the UI in the background.
+            returns isPending, startTransition function 
+            this function lets you mark updates as transition 
+            startTransition(() => {
+                setProducts(products);
+            });
         custom Hooks 
             re-using non-UI logic which uses Hooks
             compose multiple hooks into our own custom Hook
@@ -597,7 +632,7 @@ root.render(<Heading />);
             Consumer
                 all components that read the provided context value
                 whenever context value updated, all the consumer components will be re-rendered
-                useContext Hook
+                useContext Hook (new way to consume data)
                     to access the created context data
                     returns an object with data
                     ex: const user_data = useContext(UserContext) 
@@ -679,6 +714,11 @@ root.render(<Heading />);
             }
             Outlet component
                 children route component is rendered in place of this Outlet
+            useOutletContext
+                share data between parent and child routes
+                pass data into Outlet using context property
+                use Hook to access context data inside child 
+                ex: <Outlet context={{username:"user123"}}
         Protected Routes 
             create a component and check auth in useEffect, 
             navigate to home if user is unauthenticated
@@ -788,6 +828,8 @@ root.render(<Heading />);
         2nd argument
             element in which u want to render the JSX
             ex: document.body
+        usecase: notification popups, modals etc 
+        so it wont affected by root element styles etc 
     Performance Optimization
         Reduce wasted re-renders
             wasted render 
@@ -800,6 +842,7 @@ root.render(<Heading />);
                     *changing props does not resets state (recreate component from scratch)
                     since same element at same position in element tree, react preserves the state
             1. passing slow components as a children or through props to parent component
+                lifting components up
                 Assume we have a very slow component that performs an expensive "calculation" or "renders" a huge List
                 when state is changed in parent component, it triggers re-render and 
                 slow component inside parent also re-renders.
@@ -884,12 +927,15 @@ root.render(<Heading />);
         Component that takes a component and returns a component
         used to enhance the components
         this won't modify the code/behaviour of original component
+        used to add additional features to the component
     
     Controlled Components
-        parent controls the child component
+        parent component is responsible for managing child component state
         then child is controlled component
+        ex: state is received from parent component
     Uncontrolled Components
-        if component has it's own state and not controlled by it's parent
+        if component manages it's own state and not controlled by it's parent
+        ex: only has it's own state 
  
     React Error Boundaries
         to avoid white screen whenever error comes in our app
@@ -1210,7 +1256,11 @@ root.render(<Heading />);
             must return JSX
         Interface is used to define structure of objects like props
         Generic function type for React.FC
-            React.FC<PropsInterface>
+            interface PropsInterface {
+                name:string;
+                price:number;
+            }
+            const Product:React.FC<PropsInterface> = (props)=>{}            
         Generic function type for useState
             useState<SomeInterface>()
         
