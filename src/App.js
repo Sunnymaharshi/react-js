@@ -368,6 +368,10 @@ root.render(<Heading />);
                 DOM is updated in one go
             after commit phase, workInProgress fiber tree becomes current tree for next render cycle
     
+    Unneccesary Renders
+        when a component went through render phase but not commit phase
+        affects performance
+
     Preserving State and Resetting State
         React keeps track of which state belongs to which component based on their place in the UI tree.
         State is tied to a position in the render tree.
@@ -578,7 +582,7 @@ root.render(<Heading />);
             so it will run that function only when it's dependencies are changed
             it will prevent re-running the heavy functions when re-render is triggered by other
         useCallback hook
-            same as useMemo expect it 
+            same as useMemo except it 
             lets you cache a function defination between re-renders 
         useMemo and useCallback use cases 
             Memoize props to prevent wasted re-renders (together with memo function)
@@ -877,6 +881,8 @@ root.render(<Heading />);
                             the component’s previous props, and its new props. 
                             It should return true/flase by comparing props 
                         By default, React will compare each prop with Object.is.
+                        if prop is object or function, it will always renders since reference is different
+                        this can be fixed using useMemo and useCallback hooks
                     returns 
                         a memoized version of that component that will skip rerenders 
                         as long as the props of this component didn't change over rerenders.
