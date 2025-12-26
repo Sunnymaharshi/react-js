@@ -333,56 +333,277 @@ root.render(<Heading />);
         don't keep hardcoded values inside Components
         keep them inside a config file ex:utils/constants.js
     How React works
-        Render Phase 
-            Virtual DOM 
-                Tree of all react elements created from all instances in component tree
-            re-rendering a component will cause all of it's child components to be re-rendered as well 
-            no mater if props changed or not
-
-            Reconciliation (current reconciler in React is Fiber)
-                Deciding which DOM elements actually need to be inserted, deleted or updated to reflect latest state changes.
-                Fiber                 
-                    takes Element Tree (virtual DOM) and builds fiber tree
-                    fiber tree is a internal tree that has a 'fiber' for each component instance and DOM element
-                    Fibers are not created in every render, they just updated on every re-renders 
-                    it is unit of work
-                    work can be done asyncronously 
-                        work can be split, prioritize, paused and resumed
-                Diffing 
-                    comparing elements one by one based on their position in element tree (virtual DOM)
-                    same position, different element
-                        different DOM element is created
-                        old components are removed from DOM including state
-                    same position, same element
-                        element will be kept (as well as child elements), including state
-                        we can use key prop to reset the state in this situation
-                        new props/attributes are passed if they changed between renders
-                after Reconciliation and Diffing, fiber tree is updated 
+        React maintains an in-memory representation of the UI called the Virtual DOM (vDOM). 
+        it compiles JSX to React.createElement() calls that produce plain JavaScript objects describing your UI
+            // JSX
+            <div className="container">
+                <h1>Hello</h1>
+            </div>
+            // Compiles to
+            React.createElement('div', { className: 'container' },
+            React.createElement('h1', null, 'Hello')
+            )
+            // Produces a VDOM object like
+            {
+                type: 'div',
+                props: { className: 'container' },
+                children: [{ type: 'h1', props: {}, children: ['Hello'] }]
+            }
+        Reconciliation
+            When state changes, React creates a new vDOM tree and compares it with the previous one through 
+            a process called Reconciliation. 
+            This diffing algorithm is O(n) rather than O(n³) because React makes three key assumptions
+                Different component types produce substantially different trees
+                Elements with stable keys across renders represent the same component
+                Developers can hint at which child elements are stable using the key prop
+            Reconciliation decides which DOM elements need to be inserted, deleted, or updated
+        Fiber Architecture (React 16+)
+            React's reconciliation engine was completely rewritten in React 16 with the Fiber architecture. 
+            A Fiber is a JavaScript object representing a unit of work. 
+            Fiber nodes persist across renders.
+            Key Fiber properties
+                type: Component function/class or DOM element type
+                key: Unique identifier within siblings
+                child, sibling, return: Pointers forming a linked list tree structure
+                alternate: Pointer to the corresponding Fiber in the other tree (current vs. work-in-progress)
+                effectTag: Flags indicating what work needs doing (placement, update, deletion)
+                memoizedState: Component's last rendered state
+                memoizedProps: Props from the last render
+            Each React element has a corresponding Fiber node that persists across renders.
+            On initial render, Fiber creates the Fiber tree from the element tree
+            React reuses Fibers when type+key match, creates new when they don't
+            uses effect tags to track what DOM work is needed.
+            React maintains two Fiber trees:
+                Current tree
+                    Reflects what's on screen
+                Work-in-progress tree
+                    Being built during reconciliation
+            This double buffering allows React to build the new tree in memory, then swap pointers atomically.
+            Diffing 
+                comparing elements one by one based on their position in element tree (virtual DOM)
+                same position, different element
+                    different DOM element is created
+                    old components are removed from DOM including state
+                same position, same element
+                    element will be kept (as well as child elements), including state
+                    we can use key prop to reset the state in this situation
+                    new props/attributes are passed if they changed between renders
+                Basic Element Diffing
+                    Different type → Old Fiber marked DELETION + New Fiber created with PLACEMENT
+                    Same DOM element type → Fiber reused, props updated, effectTag: UPDATE
+                    Same component type → Fiber reused (instance preserved), new props passed
+                    Same type, different key → Old Fiber marked DELETION + New Fiber created with PLACEMENT
+                    Element → null/false → Fiber marked DELETION
+                    null/false → Element → New Fiber created with PLACEMENT
+                    Text content changed → Text Fiber reused, effectTag: UPDATE
+                Children Diffing
+                    Single child → Multiple children → First child Fiber reused, new Fibers created for rest
+                    Multiple children → Single child → First Fiber reused, remaining Fibers marked DELETION
+                    No children → Children → New child Fibers created with PLACEMENT
+                    Children → No children → All child Fibers marked DELETION
+                List Diffing (Without Keys)
+                    Index-based matching → Fibers matched by position, reused/created/deleted as needed
+                List Diffing (With Keys)
+                    Same keys, same order → All Fibers reused by key match
+                    Keys reordered → Fibers reused by key match, positions updated
+                    Key added → New Fiber created with PLACEMENT
+                    Key removed → Fiber marked DELETION
+                    Key replaced → Old Fiber marked DELETION + New Fiber created with PLACEMENT
+                Special Cases
+                    Fragment changes → Fragment Fiber has no DOM, only links child Fibers
+                    Bailout (React.memo, unchanged props/state) → Fiber marked NO_EFFECT, subtree skipped
+                    Nested component updates → Parent Fiber reconciled first, then child Fibers recursively
+                    Conditional rendering change → Branch Fibers either created (PLACEMENT) or marked DELETION
+                after Diffing, fiber tree is updated 
                 list of DOM updates need to be done are generated
-        Commit Phase 
-            ReactDOM library writes to DOM 
-            Renderer
-                it commits the result of render phase to application
-                ReactDOM is a renderer for browsers
-            Commiting is syncronous 
-                DOM is updated in one go
-            after commit phase, workInProgress fiber tree becomes current tree for next render cycle
-    
+        virtual DOM vs. Fiber
+            vDOM is lightweight JavaScript representation of the UI is kept in memory and synced with the real DOM.
+            Fiber is the implementation of how React manages and updates the Virtual DOM.
+            Fiber node is richer than a simple VDOM object
+                {
+                    // VDOM-like properties
+                    type: 'div',
+                    key: 'unique-key',
+                    props: { className: 'container' },
+                    
+                    // Fiber-specific (enabling the new capabilities)
+                    child: fiberNode,      // First child
+                    sibling: fiberNode,    // Next sibling
+                    return: fiberNode,     // Parent
+                    alternate: fiberNode,  // Corresponding node in other tree
+                    effectTag: 'UPDATE',   // What needs to happen
+                    nextEffect: fiberNode, // Linked list of effects
+                }
+        React splits work into two phases:
+            1. Render Phase (Interruptible)
+                Pure computation, no side effects
+                Calls component functions/render methods
+                Builds the work-in-progress Fiber tree
+                Marks Fibers with effect tags
+                Can be paused, aborted, or restarted
+            2. Commit Phase (Synchronous, uninterruptible)
+                Applies changes to the DOM
+                Runs lifecycle methods (useLayoutEffect, componentDidMount, etc.)
+                Executes useEffect callbacks asynchronously after paint
+                Cannot be interrupted—must complete once started
+                Work-in-progress fiber tree becomes current tree for next render cycle
+        Hooks Implementation
+            Hooks are stored as a linked list on the Fiber node. 
+            Each hook call creates/accesses a node in this list
+            this is why hooks must be called in the same order every render.
+        Batching 
+            multiple state updates are grouped together and processed in a single re-render 
+            instead of triggering separate re-renders for each update.
+            Before React 18, Batching only worked in React event handlers.
+            In React 18+, batching extends to promises, timeouts, fetch and native event handlers via 
+            the new concurrent rendering engine.
+            Event Loop Cycle:
+                1. Execute JavaScript (your code runs)
+                    - setState calls queue updates
+                2. Process micro-tasks (promises, etc.)
+                    - More setState calls still batched
+                3. Flush React updates (single render)
+                4. Browser paint
+            Opting Out of Batching
+                Sometimes you need synchronous updates:
+                flushSync (Force Immediate Update)
+                    import { flushSync } from 'react-dom';
+                    function handleClick() {
+                    flushSync(() => {
+                        setCount(c => c + 1);
+                    });
+                    // DOM updated immediately here                    
+                    setFlag(true);
+                    // This batches separately
+                    }
+                    Result: 2 renders instead of 1
+            Update Priority
+                Not All Updates Are Equal
+                React assigns priority levels to different types of updates:
+                    Discrete Events (click, keypress): High priority
+                    Continuous Events (scroll, mousemove): Lower priority
+                    Transitions: Explicitly low priority
+                    Deferred Updates: Lowest priority
+                Different priority updates don't batch together (multiple renders)
+    Complete React Flow
+        Initial Render
+            1. ReactDOM.render(<App />, rootElement)
+                ↓
+            2. Create root Fiber (FiberRootNode)
+                - Links to container DOM node
+                - Holds reference to current tree (initially null)
+                ↓
+            3. Render Phase - Build Fiber Tree
+                ┌─────────────────────────────────────┐
+                │ For each component/element:         │
+                │  - Call component function/class    │
+                │  - Get React elements (JSX output)  │
+                │  - Create Fiber node                │
+                │  - Set effectTag: 'PLACEMENT'       │
+                │  - Link child/sibling/return        │
+                │  - Continue with children           │
+                └─────────────────────────────────────┘
+                Creates: work-in-progress tree (all new Fibers)
+                ↓
+            4. Commit Phase - Build DOM
+                - Traverse Fiber tree depth-first
+                - Create actual DOM nodes
+                - Set properties/attributes
+                - Insert into container
+                - Run useLayoutEffect
+                - Schedule useEffect (runs after paint)
+                ↓
+            5. Switch Pointers
+                - work-in-progress tree becomes current tree
+                - Ready for updates
+        Re-render
+            1. Trigger (setState, props change, forceUpdate, context change)
+                ↓
+            2. Schedule Update
+                - Create update object
+                - Add to Fiber's update queue
+                - Schedule work with priority
+                ↓
+            3. Render Phase - Reconciliation (Interruptible)
+                ┌──────────────────────────────────────────────────┐
+                │ Start from root or changed component             │
+                │ Clone current Fiber → work-in-progress Fiber     │
+                │                                                   │
+                │ For each Fiber:                                  │
+                │   → Call render/function                         │
+                │   → Get new React elements                       │
+                │   → DIFF with existing Fiber                     │
+                │   → Tag effects (see diffing cases below)        │
+                │   → Process children                             │
+                │   → Move to next work unit                       │
+                │   → (Can pause/resume here)                      │
+                └──────────────────────────────────────────────────┘
+                ↓
+            4. Complete Phase
+                - Build effect list (linked list of changed Fibers)
+                - Bubble up from leaves to root
+                - Collect all side effects
+                ↓
+            5. Commit Phase (Synchronous, cannot interrupt)
+                Phase 1: Before Mutation
+                    - Read DOM (getSnapshotBeforeUpdate)
+                
+                Phase 2: Mutation
+                    - Execute effects in order:
+                    1. Handle DELETION effects (remove from DOM)
+                    2. Handle PLACEMENT effects (insert into DOM)
+                    3. Handle UPDATE effects (modify DOM properties)
+                
+                Phase 3: Layout
+                    - Run useLayoutEffect cleanup
+                    - Run useLayoutEffect
+                    - Update refs
+                
+                Post-commit:
+                    - Schedule useEffect (runs after paint)
+                ↓
+            6. Switch Pointers
+                - work-in-progress becomes current
+                - Keep old tree for next update cycle
+    When React Preserves vs. Recreates State
+        State PRESERVED
+            Props change only - Same type, same position, same key
+            Parent re-renders - Child stays in same position
+            Conditional with same component - {condition ? <Counter /> : <Counter />}
+            Reordering with keys - Keys match, position changes ignored
+            React.memo bailout - Component doesn't re-render, state untouched
+            Wrapper stays same - Parent element unchanged, child position stable
+        State RESET ❌
+            Type Changes
+                Component type changes - {isPremium ? <PremiumCounter /> : <BasicCounter />}
+                DOM element type changes - {useDiv ? <div><Child /></div> : <span><Child /></span>}
+            Position Changes
+                Elements added before - {showHeader && <Header />}<Counter />
+                Elements removed before - Counter shifts from position 2 → 1
+                Reordering without keys - Index-based matching fails
+                Conditional wrapper changes - {show ? <div><Counter /></div> : <section><Counter /></section>}
+            Key Changes
+                Key prop changes - <Profile key={userId} /> when userId updates
+                No keys in reordered list - React uses index, mismatches components
+            Parent Changes
+                Parent element type changes - Parent unmounts, entire subtree destroyed
+                Conditional parent wrapper - Different wrapper instances treated as different parents
+            Unmount/Remount
+                Conditional rendering toggle - {show && <Counter />} - unmounts when false
+                Lazy component hide/show - {show && <LazyComponent />} - fresh mount each time
+                Array item removal without keys - Wrong items preserved/deleted
+        Identity = Type + Position + Key
+            Identity unchanged → State preserved
+            Identity changed → State reset
+        Re-rendering a component will cause all of its child components to re-render by default, 
+        regardless of whether props changed. However:
+            Children don't remount (state is preserved)
+            DOM only updates if output actually changed (via diffing)
+            You can prevent child re-renders using React.memo, useMemo, useCallback, or composition patterns
+            Re-rendering itself is usually cheap; optimize only when profiling shows it's needed
     Unneccesary Renders
         when a component went through render phase but not commit phase
         affects performance
-
-    Preserving State and Resetting State
-        React keeps track of which state belongs to which component based on their place in the UI tree.
-        State is tied to a position in the render tree.
-        When you re-render a component, React needs to decide which parts of the tree to keep (and update), 
-        and which parts to discard or re-create from scratch.
-        By default, React preserves the parts of the tree that “match up” with the previously rendered component tree.
-        * changing props doesn't resets state (recreate component from scratch)
-            since same element at same position, react preserves the state
-        React lets you override the default behavior, and force a component to reset its state by passing it a different key
-        This tells React that if the recipient is different, it should be considered a different Chat component
-        that needs to be re-created from scratch
     
     Key prop
         special prop that we use to tell Diffing Algorithm that an element is unique
