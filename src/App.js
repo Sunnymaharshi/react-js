@@ -604,6 +604,7 @@ root.render(<Heading />);
     Unneccesary Renders
         when a component went through render phase but not commit phase
         affects performance
+        React.memo, useMemo, useCallback, Lift Content Up (Children Pattern) can help.
     How React Schedules Work
         Breaking work into chunks (time-slicing)
         Prioritizing urgent updates over less urgent ones
