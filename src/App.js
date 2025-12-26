@@ -604,7 +604,38 @@ root.render(<Heading />);
     Unneccesary Renders
         when a component went through render phase but not commit phase
         affects performance
-    
+    How React Schedules Work
+        Breaking work into chunks (time-slicing)
+        Prioritizing urgent updates over less urgent ones
+        Interrupting low-priority work for high-priority work
+        Keeping the UI responsive during heavy computation
+        Priority Levels
+            React assigns every update a priority that determines urgency:
+            1. Immediate Priority (Sync)
+                Use case: Discrete user input (clicks, key presses, focus)
+                Timeout: None (must run immediately)
+                Behavior: Blocks everything, runs synchronously
+                Example: Button click, form submission
+            2. UserBlocking Priority
+                Use case: User interaction feedback (hover, typing)
+                Timeout: 250ms
+                Behavior: High priority, can interrupt other work
+                Example: Input field typing, drag operations
+            3. Normal Priority (Default)
+                Use case: Most updates (data fetching results, network responses)
+                Timeout: 5 seconds
+                Behavior: Standard priority, time-sliceable
+                Example: Loading search results, updating list after API call
+            4. Low Priority
+                Use case: Deferred work (analytics, logging)
+                Timeout: 10 seconds
+                Behavior: Can be interrupted frequently
+                Example: Updating analytics dashboard, prefetching data
+            5. Idle Priority
+                Use case: Work that can wait indefinitely
+                Timeout: Never expires
+                Behavior: Only runs when nothing else to do
+                Example: Prefetching future routes, background sync
     Key prop
         special prop that we use to tell Diffing Algorithm that an element is unique
         allows react to distinguish btw multiple instances of same component
