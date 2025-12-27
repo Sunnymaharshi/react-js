@@ -258,7 +258,6 @@ const Heading = () => {
 
 root.render(<Heading />);
 
-/************************************** Food Ordering App **********************************/
 /*
     Config-Driven UI    
         Config-driven UI is a design pattern where the structure and behaviour of the 
@@ -686,6 +685,40 @@ root.render(<Heading />);
             This ensures that the DOM is updated immediately.
             use: flushSync(callback)
             can significantly hurt performance
+    Stale Closures in React
+        A stale closure happens when a function "remembers" an old value of a variable 
+        instead of using the current value.
+        function Counter() {
+            const [count, setCount] = useState(0);
+
+            const handleClick = () => {
+                setTimeout(() => {
+                    setCount(count + 1); // Stale! Uses old count value
+                }, 3000);
+            };
+        }
+        Each render creates a new version of handleClick with its own count value
+        solutions
+            setCount(prevCount => prevCount + 1);
+            useRef
+    forwardRef in React
+        lets you pass a ref through a component to one of its children. 
+        It's necessary because refs don't get passed like regular props.
+        const FancyInput = forwardRef((props, ref) => {
+            return (
+                <div className="fancy-input-wrapper">
+                <label>{props.label}</label>
+                <input
+                    ref={ref}
+                    type={props.type}
+                    className="fancy-input"
+                    {...props}
+                />
+                </div>
+            );
+        });
+        <FancyInput ref={emailRef} label="Email" type="email" />
+    
     Events in React 
         react performs event delegation for all events in the app
         registers all event handlers on root node 
@@ -863,11 +896,15 @@ root.render(<Heading />);
             });
         custom Hooks 
             re-using non-UI logic which uses Hooks
-            compose multiple hooks into our own custom Hook
-            it can have arguments just like a function, not props like a component
+            lets you extract component logic into reusable functions.
             to abstract the implementation and modularize code
+            Encapsulate complex behavior
             file and hook name prefered to start with "use" 
-            ex: custom hook to fetch the user data
+            function useCustomHook(initialValue) {
+                const [state, setState] = useState(initialValue);                
+                // Your logic here                
+                return [state, setState]; // or return { state, setState }
+            }
 
         Context API in react
             prop drilling 
@@ -1077,16 +1114,21 @@ root.render(<Heading />);
         now react is controlling the state of input element
 
     Portal in react-dom 
-        used to place the component anywhere in the DOM tree.
-        it does not change React component tree
-        createPortal function
-        1st argument
-            JSX 
-        2nd argument
-            element in which u want to render the JSX
-            ex: document.body
-        usecase: notification popups, modals etc 
-        so it wont affected by root element styles etc 
+        render components outside their parent DOM hierarchy 
+        while maintaining React's component tree. 
+        import { createPortal } from 'react-dom';
+        function Modal() {
+            return createPortal(
+                <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    {children}
+                </div>
+                </div>,
+                document.getElementById('modal-root') // Portal target
+            );
+        }
+        for modals, tooltips, dropdowns, and notifications.
+        so it won't be affected by root element styles etc 
     Performance Optimization
         Reduce wasted re-renders
             wasted render 
@@ -1153,18 +1195,24 @@ root.render(<Heading />);
                 useMemo Hook 
                     Memoize objects
                 useCallback
-                    Memoize functions   
-            
-            3. Optimize context re-renders
-                if parent of Provider re-renders, value we're passing through Provider also will be re-created
-                so all the comsumers of Provider will re-render 
-                memoize the value object using useMemo to prevent wasted context re-renders 
+                    Memoize functions               
+            3. Context Selector patterns
+                Context causes all consumers to re-render when any value changes.
+                Selector patterns let components subscribe to only specific parts of context
+                preventing unnecessary re-renders. 
+                Split Contexts
+                    create multiple contexts for different data
+                Custom Selector Hook
+                    Create a hook that only subscribes to selected values
+                Memoize your context values
 
         Code Splitting / lazy loading  / ondemand loading
             Code Splitting / App Chunking / Dynamic Bundling
                 spliting app bundle into multiple parts that can be downloaded over time when needed 
             Lazy loading  / ondemand loading
                 process of loading code ondemand or when needed  
+                defer loading components, images, or other resources until they're actually needed. 
+                This improves initial load time and reduces unnecessary data transfer.
                 React.lazy function
                     lets you defer loading component’s code until it is rendered for the first time.
                     While the code for the lazy component is still loading, it suspends component render
@@ -1180,7 +1228,10 @@ root.render(<Heading />);
                     ex:<Suspense fallback={<Loading />}>
                             <Home />
                        </Suspense>
-                while building, bundler will create seperate bundle files for these components
+                Build time: Webpack/bundler creates separate chunk files
+                Runtime: When component is rendered, React fetches the chunk
+                While loading: Suspense fallback is displayed
+                After loading: Actual component renders
 
     Higher Order Components 
         Component that takes a component and returns a component
@@ -1355,7 +1406,34 @@ root.render(<Heading />);
                     <Counter.Increase icon="+"/>
                 </Counter>
 
-                
+    Different State Management Solutions
+        React Context
+            Built-in React API for sharing data across the component tree without prop drilling.
+            When not to use
+                Complex state logic with many actions
+                Need for time-travel debugging
+                Large teams needing strict patterns
+                State that needs to persist across page reloads
+        Redux
+            Predictable state container with a single store, actions, and reducers.
+            When to Use
+                Complex state logic
+                Large applications
+                Time-travel debugging
+                Middleware needs
+                Strict team patterns
+        Zustand
+            Minimal, fast state management with hooks. No providers, no boilerplate.
+            When to Use
+                Simple global state without Context overhead
+                Need better performance than Context
+                Want Redux-like features without Redux complexity
+                Async operations are common
+                Medium-sized apps
+                Multiple independent stores
+        Start with Context for simple needs. Move to Zustand when Context becomes 
+        limiting or performance suffers. Choose Redux for large, complex apps with strict 
+        requirements and big teams. 
     
     Testing 
         Unit testing 
@@ -1522,7 +1600,9 @@ root.render(<Heading />);
             const Product:React.FC<PropsInterface> = (props)=>{}            
         Generic function type for useState
             useState<SomeInterface>()
-        
+    
+    Windowing/Virtualization for Long Lists
+        renders only the visible items in a long list instead of rendering thousands of DOM nodes. 
     Webpack 
         bundler
         used to bundle the files together
