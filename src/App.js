@@ -1304,7 +1304,7 @@ root.render(<Heading />);
 
     Suspense for Data Fetching
         we have to implemente data fetching logic to work with Suspense
-        we should throw a promise while data is being fetched.
+        we should throw a promise while data is being fetched (wrapping promise).
         react query has built-in Suspense support
     Redux 
         3rd party library to manage global state (ui state/client side)
@@ -1314,10 +1314,7 @@ root.render(<Heading />);
     React-Redux
         for react 
     Redux toolkit (RTK)
-        gives a standard way of writing redux logic 
-        modern way of writing redux
-        lot less code than classic redux 
-        follows best practices
+        simplifies Redux by eliminating boilerplate and providing better defaults.
         classic redux and toolkit are compatible with each other,
         we can change some code to toolkit and redux works fine
         Redux store 
@@ -1372,17 +1369,37 @@ root.render(<Heading />);
                 *Only subscribe the data that is needed inside the component (Optimization)
                 ex: data = useSelector((store)=>store.user)  
         Redux Middleware 
-            sit between dispatching the action and store
-            allows u to run code after dispatching but before reaching the reducer in the store 
+            sit between dispatching the action and reducer
+            allowing you to intercept, modify, or handle actions.
             used for 
                 async operations
                     like API fetch as we can't have side effects in reducers
                 timers,logging etc 
                 place for side effetcs
             Redux Thunk 
+                lets you dispatch functions instead of actions. 
+                It's included by default in Redux Toolkit.
                 allow us to write additional Redux-related logic separate from a UI layer. 
                 used to write async operations and other side effetcs
                 configure thunk in redux store 
+                // Thunk: a function that returns a function
+                const fetchUser = (userId) => {
+                    return async (dispatch, getState) => {
+                        // Dispatch loading action
+                        dispatch({ type: 'users/fetchStart' });                    
+                        try {
+                            const response = await fetch(`/api/users/${userId}`);
+                            const user = await response.json();                    
+                            // Dispatch success action
+                            dispatch({ type: 'users/fetchSuccess', payload: user });
+                        } catch (error) {
+                            // Dispatch error action
+                            dispatch({ type: 'users/fetchError', payload: error.message });
+                        }
+                    };
+                };
+                // Usage
+                dispatch(fetchUser(123));
                 ex: appStore = configureStore({
                     reducer: {
                         counter: counterReducer,
@@ -1393,15 +1410,101 @@ root.render(<Heading />);
                 redux will see it as a Thunk 
                 this function will receive dispatch and getState functions as arguments
                 after fetching, we can call this dispatch to update the store
+            Redux Thunk with Redux Toolkit
                 createAsyncThunk
                     to create async thunk
                     takes action name and async function as arguments
+                    export const fetchUser = createAsyncThunk(
+                        'users/fetch',
+                        async (userId, { rejectWithValue }) => {
+                            try {
+                                const response = await fetch(`/api/users/${userId}`);
+                                if (!response.ok) throw new Error('Failed to fetch');
+                                return await response.json();
+                            } catch (error) {
+                                return rejectWithValue(error.message);
+                            }
+                        }
+                    );
                 extraReducers
                     to configure async thunk to slice
                     builder 
                         lets u handle cases for thunk 
                         like loading, fulfilled and rejected etc
-                        
+                    extraReducers: (builder) => {
+                        builder
+                        .addCase(fetchUser.pending, (state) => {
+                            state.loading = true;
+                            state.error = null;
+                        })
+                        .addCase(fetchUser.fulfilled, (state, action) => {
+                            state.loading = false;
+                            state.entities[action.payload.id] = action.payload;
+                        })
+                        .addCase(fetchUser.rejected, (state, action) => {
+                            state.loading = false;
+                            state.error = action.payload;
+                        });
+                    },
+            Redux Saga
+                uses ES6 generators for handling side effects.
+                more powerful but more complex than thunks.
+                Use Sagas When
+                    Complex async flows
+                    Cancellation is important
+                    Debouncing/throttling
+                    Long-running tasks
+                    Racing conditions
+                    Complex coordination
+                    Better testing
+        Redux vs Redux Toolkit (RTK)  
+            Redux
+                more boilerplate code 
+                manual setup of store, actions, reducers  
+                have to return new state from reducer
+                // Action types
+                const INCREMENT = 'counter/increment';
+                const DECREMENT = 'counter/decrement';
+                // Action creators
+                const increment = () => ({ type: INCREMENT });
+                const decrement = () => ({ type: DECREMENT });
+                // Reducer
+                const counterReducer = (state = { value: 0 }, action) => {
+                    switch (action.type) {
+                        case INCREMENT:
+                        return { ...state, value: state.value + 1 };
+                        case DECREMENT:
+                        return { ...state, value: state.value - 1 };
+                        default:
+                        return state;
+                    }
+                };
+                // Store
+                const store = createStore(counterReducer); 
+            Redux Toolkit
+                can directly modify state in reducer (internally uses immer)
+                No action types constants
+                No manual action creators
+                Redux DevTools configured automatically
+                Thunk middleware included by default
+                const counterSlice = createSlice({
+                    name: 'counter',
+                    initialState: { value: 0 },
+                    reducers: {
+                        increment: (state) => {
+                            state.value += 1; // Immer makes this safe
+                        },
+                        decrement: (state) => {
+                            state.value -= 1;
+                        },
+                    },
+                });
+                export const { increment, decrement } = counterSlice.actions;
+                const store = configureStore({
+                    reducer: {
+                        counter: counterSlice.reducer,
+                    },
+                });
         Context + Reducer vs Redux
             Context 
                 built into react
@@ -1649,6 +1752,17 @@ root.render(<Heading />);
     
     Windowing/Virtualization for Long Lists
         renders only the visible items in a long list instead of rendering thousands of DOM nodes. 
+    Render-as-You-Fetch vs Fetch-on-Render
+        Fetch-on-Render (Traditional, Slow)
+            Data fetching starts after component renders.
+        Render-as-You-Fetch (Modern, Fast)
+            Start fetching before rendering, render components as data becomes available.
+            Fast (parallel)
+            1. Wrapping Promises
+            2. React Query with Suspense
+            3: Server Components (Best)
+            Use Suspense boundaries strategically, don't keep multiple fetches in single Suspense.
+
     Webpack 
         bundler
         used to bundle the files together
@@ -1686,7 +1800,47 @@ root.render(<Heading />);
         Cons 
             Less Interactive
                 Pages might be downloaded on demand and require full page reloads 
-    
+    React Server Components (RSC)
+        lets you render components on the server that never send JavaScript to the client.
+        reduces bundle size and improves performance.
+        Server Components are a React feature, but require framework support (like Next.js) to work.
+        Can use async/await at component level
+        Cannot use browser APIs
+        Cannot handle user interactions directly
+        Zero JavaScript sent to client
+    Server components vs Server Side Rendering
+        Server Side Rendering (SSR)
+            Renders initial HTML on server
+            Sends full component code to client
+            Client "hydrates" with JavaScript
+            Components become interactive on client
+        Server Components (RSC)
+            Render on server only
+            No component code sent to client
+            No hydration needed for Server Components
+            Can never become interactive (use Client Components for interactivity)
+    Hydration
+        Making static HTML interactive
+        server sends HTML to client without event listeners
+        Browser downloads and executes app.js
+        fiber tree 
+            points to actual DOM nodes
+            Stores component state
+            Tracks event handlers
+            Manages updates
+        Event Delegation
+            React doesn't attach listeners to every element
+            it attaches a single listener to document
+            document.addEventListener('click', (e) => {
+                // Find which fiber node was clicked
+                const fiber = findFiberFromDOM(e.target);                
+                // Get the handler from fiber
+                const handler = fiber.props.onClick;                
+                // Call it
+                if (handler) handler(e);
+            });
+        Selective Hydration (React 18+)
+            Prioritizes interactive parts
     Next.js
         React Framework
         Built on top of React 
