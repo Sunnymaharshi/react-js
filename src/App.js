@@ -1518,13 +1518,28 @@ root.render(<Heading />);
                 Supports Middleware for async operations
 
     React Query library
-        used to manage remote(server) state 
+        manages server state (data from APIs) separately. 
         Data is stored in cache 
-        Automatic loading and error states 
-        Automatic re-fetching to keep state synched 
+        handles caching, background updates, and synchronization automatically.
         Pre-fetching data (data that will be used in future)
-        Easy remote state updation 
+            queryClient.prefetchQuery({
+                queryKey: ['posts', page + 1],
+                queryFn: () => fetchPosts(page + 1),
+            });
+        Optimistic Updates
+            Update UI immediately, rollback if server fails:
         Offline support
+        Pagination 
+            const { data, isLoading, isFetching } = useQuery({
+                queryKey: ['posts', page],
+                queryFn: () => fetchPosts(page),
+                keepPreviousData: true, // Keep old data while fetching new (no loading state)
+            });
+        // How long data stays "fresh"
+        staleTime: 5 * 60 * 1000, // 5 minutes        
+        // How long inactive data stays in cache
+        cacheTime: 10 * 60 * 1000,
+        
     
     Advanced React Patterns
         Reusability
@@ -1767,6 +1782,8 @@ root.render(<Heading />);
         bundler
         used to bundle the files together
         optimizes the code (Minification)
+        Webpack bundles everything always. 
+        Vite only bundles for production, serves ES modules directly in development.
     Client side rendering (CSR)
         HTML is rendered(generated) on client(browser) using JavaScript
         best for highly interactive web apps
@@ -1783,6 +1800,9 @@ root.render(<Heading />);
                 so search engines might find a blank page when they try to index the site
     Server side rendering (SSR)
         HTML is rendered(generated) on server
+        Streaming SSR (Progressive)
+            renderToPipeableStream is used to stream HTML to client as it is generated
+            With streaming, React can hydrate components as they arrive.
         best for Content-driven websites or apps where SEO is essential 
         like E-commerce, blogs, news, marketing website etc
         Types 
@@ -1800,6 +1820,20 @@ root.render(<Heading />);
         Cons 
             Less Interactive
                 Pages might be downloaded on demand and require full page reloads 
+    Edge Computing
+        Cloudflare Workers, Vercel Edge Functions, Netlify Edge Functions
+        run code closer to users geographically
+        Perfect for auth, personalization, caching
+        Not available at edge
+           Node.js APIs (fs, path, crypto)
+           Database connections (PostgreSQL, MySQL)
+           Long-running processes
+           Large dependencies
+        Works at edge
+           Fetch API
+           Web Crypto API
+           Edge databases (Cloudflare D1, Vercel KV)
+           Lightweight operations
     React Server Components (RSC)
         lets you render components on the server that never send JavaScript to the client.
         reduces bundle size and improves performance.
