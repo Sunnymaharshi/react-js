@@ -878,22 +878,64 @@ root.render(<Heading />);
             * only use these when it truly improves the performance, do not use these everywhere 
             as these needs to cached in memory
         useDeferredValue Hook 
-            lets you defer updating a part of the UI.
+            lets you defer updating a part of the UI to keep it responsive during expensive renders.
             takes value, initialValue?
             it defers the value u have passed 
             ex: const [query, setQuery] = useState('');
             const deferredQuery = useDeferredValue(query);
-            React will first attempt a re-render with the old value (so it will return the old value), and then try another re-render in the background with the new value (so it will return the updated value).
-            it always trys to render with latest value in background
-            if value is updated, it stop previous render and renders again with new value 
-            in background
-        useTransition Hook 
-            lets you render a part of the UI in the background.
-            returns isPending, startTransition function 
-            this function lets you mark updates as transition 
-            startTransition(() => {
-                setProducts(products);
-            });
+            React will first attempt a re-render with the old value (so it will return the old value), 
+            then try another re-render in the background with the new value.
+        Transitions in React
+            lets you mark certain state updates as non-urgent
+            keeping the UI responsive during expensive renders.
+            const handleChange = (e) => {
+                const value = e.target.value;
+                setQuery(value); // Blocks UI
+                
+                // Expensive filtering
+                const filtered = hugeDataset.filter(item => 
+                    item.title.toLowerCase().includes(value.toLowerCase())
+                );
+                setResults(filtered); // Also blocks UI
+            };
+            useTransition Hook 
+                marks updates as non-urgent, allowing React to keep the UI responsive
+                const [isPending, startTransition] = useTransition();
+                const handleChange = (e) => {
+                    const value = e.target.value;
+                    setQuery(value); // Urgent - updates immediately                    
+                    // Non-urgent - can be interrupted
+                    startTransition(() => {
+                        const filtered = hugeDataset.filter(item => 
+                            item.title.toLowerCase().includes(value.toLowerCase())
+                        );
+                        setResults(filtered);
+                    });
+                };
+                If user types again, React abandons old transition and starts new one
+                isPending is true while transition is in progress
+                If you don't need isPending, use the standalone startTransition
+                    import { startTransition } from 'react';
+                    startTransition(() => {
+                        setTab(newTab); // Non-urgent update
+                    });            
+            Use transitions for:
+                Filtering/searching large lists
+                Tab switching with expensive content
+                Route navigation
+                Sorting operations
+                Heavy computations that update UI
+                Any update where old content should stay visible
+            Don't use transitions for:
+                Simple state updates (counter, toggle)
+                Async data fetching (use Suspense)
+                Animations (use CSS or animation libraries)
+                User input feedback (these must be immediate)
+        useDeferredValue vs useTransition
+            Both keep UI responsive, but they work differently
+            Use useTransition when you control the state update and want to defer it.
+            Use useDeferredValue when you receive a value (prop/state) and want to defer using it.
+                <ExpensiveResults query={deferredQuery} />
         custom Hooks 
             re-using non-UI logic which uses Hooks
             lets you extract component logic into reusable functions.
@@ -1260,6 +1302,10 @@ root.render(<Heading />);
                 <App />
             </ErrorBoundary>
 
+    Suspense for Data Fetching
+        we have to implemente data fetching logic to work with Suspense
+        we should throw a promise while data is being fetched.
+        react query has built-in Suspense support
     Redux 
         3rd party library to manage global state (ui state/client side)
         alternative to useContext + useReducer
