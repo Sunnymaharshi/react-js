@@ -1274,20 +1274,183 @@ root.render(<Heading />);
                 Runtime: When component is rendered, React fetches the chunk
                 While loading: Suspense fallback is displayed
                 After loading: Actual component renders
+    Core Web Vitals
+        Google's metrics for measuring user experience. 
+        They directly impact SEO rankings and user satisfaction.
+        can measure it programatically using PerformanceObserver API or web-vitals library
+        LCP (Largest Contentful Paint)
+            Time until the largest content element becomes visible in the viewport.
+            The browser keeps updating the LCP candidate until the page 
+            becomes interactive or user scrolls.
+            Common LCP Elements
+                Hero images, Banner images, Large headings, Video thumbnails
+            Improving LCP
+                Optimize images
+                    <picture>
+                        <source srcset="hero.avif" type="image/avif" />
+                        <source srcset="hero.webp" type="image/webp" />
+                        <img
+                            src="hero.jpg"
+                            alt="Hero"
+                            width="1200"
+                            height="600"
+                            loading="eager"
+                            fetchpriority="high"
+                        />
+                    </picture>
+                Preload Critical Resources
+                    <link rel="preload" as="image" href="hero.jpg" fetchpriority="high" />
+                Reduce Server Response Time (TTFB)
+                    Use edge caching
+                        export const config = {
+                            runtime: 'edge',
+                        };
+                    Enable compression
+                        app.use(compression());
+                    Use CDN for static assets
+                Eliminate Render-Blocking Resources
+                    non-blocking css and js
+                    <link rel="preload" as="style" href="styles.css" 
+                        onload="this.rel='stylesheet'" />
+                    <script src="analytics.js" async></script>
+                Next.js Image tag for Optimization
+                    converts to WebP/AVIF
+                    Generates responsive sizes
+                    Lazy loads by default (unless priority)
+                    Optimizes on-demand
+                Implement Skeleton/Placeholder
+        INP (Interaction to Next Paint)
+            replacement for FID (First Input Delay), the delay for the first interaction
+            tracks all user interactions (clicks, taps, keypresses) from input to visual update
+            What Causes Poor INP?
+                Long Tasks
+                Heavy Event Handlers
+                Render-Blocking JavaScript
+            Improving INP
+                Use Web Workers
+                Code Splitting
+                Debounce/Throttle
+                Virtualization
+                RequestIdleCallback
+                    for non-urgent tasks
+        CLS (Cumulative Layout Shift)
+            Measures visual stability by tracking unexpected layout shifts.
+            Common CLS Causes
+                Images Without Dimensions
+                Ads and Embeds
+                Web Fonts (FOIT/FOUT)
+                Dynamic Content Injection
+                Animations Causing Layout
+            Improving CLS
+                Always Set Dimensions
+                Use CSS Aspect Ratio for images 
+                Reserve Space for Dynamic Content
+                Preload Fonts
+                Position Overlays Correctly
+        TTI (Time to Interactive)
+            Time until page fully interactive
+        Good Core Web Vitals means 
+            Better SEO rankings
+            Higher conversion rates
+            Better user experience
+            Lower bounce rates
+    React Design Patterns
+        1. Compound Components Pattern
+            Sharing implicit state between parent and child components without prop drilling.
+            use children prop to build flexible components
+            ex: Flexible, composable UI components like tabs
+                <Tabs defaultValue="profile">
+                    <TabsList>
+                        <TabsTrigger value="profile">Profile</TabsTrigger>
+                        <TabsTrigger value="settings">Settings</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            When to use
+                Building UI libraries (Radix, Headless UI, shadcn)
+                Components with multiple related parts
+                Need flexible composition and styling
+                Want to avoid prop drilling
+        2. Render Props Pattern
+            Share code between components using a prop whose value is a function.
+            Modern alternative - Custom Hooks
+            function DataFetcher({ url, render }) {
+                const [data, setData] = useState(null);
+                const [loading, setLoading] = useState(true);
+                useEffect(() => {
+                    fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        setData(data);
+                        setLoading(false);
+                    });
+                }, [url]);
+                return render({ data, loading });
+            }
+            <DataFetcher
+                url="/api/user"
+                render={({ data, loading }) => {
+                    if (loading) return <Skeleton />;
+                    return <Card title={data.name} subtitle={data.email} />;
+                }}
+            />
+        3. Higher Order Components 
+            Reuse component logic by wrapping components.
+            Component that takes a component and returns a component
+            used to add additional features to the component
+            function withAuth(Component) {
+                return function AuthenticatedComponent(props) {
+                    const { user, loading } = useAuth();
 
-    Higher Order Components 
-        Component that takes a component and returns a component
-        used to enhance the components
-        this won't modify the code/behaviour of original component
-        used to add additional features to the component
-    
-    Controlled Components
-        parent component is responsible for managing child component state
-        then child is controlled component
-        ex: state is received from parent component
-    Uncontrolled Components
-        if component manages it's own state and not controlled by it's parent
-        ex: only has it's own state 
+                    if (loading) {
+                    return <LoadingSpinner />;
+                    }
+
+                    if (!user) {
+                    return <Navigate to="/login" />;
+                    }
+
+                    return <Component {...props} user={user} />;
+                };
+            }
+        4. Provider Pattern (with Context)
+            Share data deeply without prop drilling.
+            <ThemeProvider>
+                <ToastProvider>
+                    {children}
+                </ToastProvider>
+            </ThemeProvider>
+        5. Container/Presentational Pattern
+            Separate data fetching/logic from UI rendering.
+            can have separate component or custom hook for data fetching
+        6. Custom Hooks Pattern
+            Extract and reuse stateful logic.
+        7. State Reducer Pattern
+            Manage complex state logic with more control than useState
+            reducer function to update state based on action
+        8. Props Getter Pattern
+            Provide props to child elements with sensible defaults and override capability.
+            // Props getters return props objects
+            const getToggleButtonProps = ({ onClick, ...props } = {}) => ({
+                onClick: (e) => {
+                setIsOpen(!isOpen);
+                onClick?.(e);
+                },
+                'aria-haspopup': true,
+                'aria-expanded': isOpen,
+                ...props,
+            });
+        9. Controlled vs Uncontrolled Pattern
+            Decide who manages component state.    
+            Controlled Components
+                parent component is responsible for managing child component state
+                ex: input element with value and onChange props
+            Uncontrolled Components
+                if component manages it's own state and not controlled by it's parent
+                ex: input element with ref
+        10. Proxy Pattern (for Performance)
+            Prevent unnecessary re-renders in large lists.
+            like using memo function, useMemo and useCallback hooks
+            
  
     React Error Boundaries
         to avoid white screen whenever error comes in our app
