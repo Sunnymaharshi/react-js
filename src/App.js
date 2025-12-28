@@ -2196,8 +2196,100 @@ root.render(<Heading />);
                 Composite-Only Animations
                     Use transform and opacity for smooth animations
                     Don't use layout properties which trigger full pipeline
+    Security 
+        Cross-Origin Resource Sharing (CORS)
+            browser security mechanism that controls cross-origin HTTP requests.
+            That's why we don't face CORS issues in Postman or curl
+            Browsers enforce the Same-Origin Policy by default
+            How it works:
+                Browser sends a preflight OPTIONS request for non-simple requests
+                Server responds with headers like Access-Control-Allow-Origin, Access-Control-Allow-Methods
+                Browser allows/blocks the actual request based on these headers
+        Content Security Policy (CSP)
+            mitigates XSS and data injection attacks by controlling which resources can be loaded.
+            Implementation via HTTP header
+                Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline'
+            Key directives:
+                default-src
+                    Fallback for other directives
+                script-src
+                    Controls JavaScript sources
+                style-src
+                    Controls CSS sources
+                img-src, font-src, connect-src
+                    Control other resource types
+                frame-ancestors
+                    Controls where your site can be framed (prevents clickjacking)
+            Nonces and hashes
+                Modern CSP uses nonces or hashes for inline scripts instead of 'unsafe-inline'
+                <script nonce="random123">...</script>
+        XSS (Cross-Site Scripting)
+            injection of malicious scripts into trusted websites
+            Stored XSS
+                persisted in DB
+            Reflected XSS
+                in URL/form input
+            DOM-based XSS
+                client-side manipulation
+            Prevention strategies
+                Input sanitization and output encoding
+                    escape user input before rendering.
+                    React, Vue, Angular escape by default.
+                    be careful with dangerouslySetInnerHTML or v-html.
+                Avoid dangerous APIs
+                    eval(), innerHTML, document.write()
+                    setTimeout/setInterval with strings.
+                Sanitize HTML
+                    If you must render user HTML, use libraries like DOMPurify
+                Content Security Policy (CSP)
+                    prevents inline script execution.
+                HTTPOnly cookies
+                    Prevents JavaScript access to sensitive cookies.
+        CSRF (Cross-Site Request Forgery)
+            CSRF tricks authenticated users into executing unwanted actions 
+            by exploiting that browsers automatically send cookies with requests.
+            malicious site 
+            <img src="https://bank.com/transfer?to=attacker&amount=1000">
+            Browser sends your cookies automatically
+            Prevention
+                CSRF Tokens
+                    Server generates unique token per session/request
+                    validates it on state-changing operations
+                SameSite Cookie attribute
+                    Strict
+                        Never sent on cross-site requests
+                    Lax
+                        Sent on top-level GET navigations (default in modern browsers)
+                    None
+                        Requires `Secure` flag
+        iFrame policies
+            X-Frame-Options (legacy) http response header
+                DENY
+                SAMEORIGIN
+                ALLOW-FROM https://trusted.com
+            CSP frame-ancestors (modern approach)
+                Content-Security-Policy: frame-ancestors 'self' https://trusted.com
+            control if your site can be embedded in an iframe.
+            Clickjacking prevention
+                These headers prevent your site from being embedded in malicious iframes 
+                where attackers overlay transparent elements to trick users.
+        Subresource Integrity (SRI)
+            Verify CDN resources haven't been tampered
+            <script src="https://cdn.com/lib.js" 
+                integrity="sha384-hash..." 
+                crossorigin="anonymous"></script>
+        Secure cookie flags
+            Secure
+                Only sent over HTTPS
+            HttpOnly
+                Not accessible via JavaScript
+            SameSite
+                CSRF protection
+        JSONP (JSON with Padding)
+            legacy technique to bypass same-origin policy by exploiting <script> tags
+            Deprecated, CORS is modern alternative
 
-        
+                        
     Next.js
         React Framework
         Built on top of React 
