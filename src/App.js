@@ -2124,6 +2124,80 @@ root.render(<Heading />);
         Modern apps use multiple strategies
         Performance vs Freshness trade-off
         If public content, SEO matters: use SSR/SSG/ISR
+    Finding memory leaks
+        Memory Profiler used to find memory leaks in react apps
+        1. Take snapshot before mounting component
+        2. Mount/unmount component several times
+        3. Take another snapshot
+        4. Compare snapshots
+        5. Look for objects that should be garbage collected but aren't
+    Critical Rendering Path (CRP)
+        sequence of steps browser takes to convert HTML,CSS,JS into pixels on screen
+        shorter CRP means the user sees content sooner
+        1. Minimize Critical Resources
+        2. Minimize Critical Bytes
+        3. Optimize CSS Delivery
+        4. Eliminate Render-Blocking JavaScript
+    Browser Rendering Pipeline
+        1: JavaScript
+            JavaScript modifies the DOM or CSSOM
+        2: Style Calculation
+            Browser calculates computed styles for every element
+        3: Layout (Reflow)
+            Browser calculates geometry (position, size) of elements
+        4: Paint
+            Browser converts elements to pixels 
+        5: Composite
+            Browser combines layers into final image
+        Reflow (Layout Recalculation)
+            Recalculating the geometry (position, size) of elements.
+            Geometry changes (expensive)
+            Expensive because:
+                Must recalculate affected elements
+                Often affects children, siblings, parents
+                Can cascade through entire document
+                Blocks JavaScript execution (synchronous)
+            layout thrashing
+                Reading and writing layout properties in loops
+                Solution: Batch all reads, then all writes
+            Reflow Optimization Strategies
+                1. Use transform instead of layout properties
+                2. Modify classes, not individual styles
+                3. Use documentFragment for batch DOM
+                4. Take elements out of flow
+                    position: absolute/fixed
+                5. Use CSS containment
+                    contain: layout;
+        Repaint 
+            Redrawing pixels without changing geometry.
+            Visual changes only (less expensive)
+            ex: element.style.color = 'blue';
+            element.style.borderColor = 'green';
+            Minimizing Repaints
+                1. Use CSS animations instead of JavaScript
+                2. Use will-change to prepare
+                    Browser prepares GPU resources
+                    will-change: transform, opacity;
+                3. Limit paint area
+                    contain: paint;
+        Composite 
+            GPU operations (cheapest)
+            Layer Creation
+                Browser automatically creates layers for
+                    <video>, <canvas>, <iframe>, position: fixed
+                With layers
+                    Change element → Repaint only that layer → Composite
+                    Small change = small repaint
+            Layer Optimization
+                Good use of layers
+                    add following for frequently animated elements
+                    will-change: transform, opacity;
+                    Don't add for every element
+                Composite-Only Animations
+                    Use transform and opacity for smooth animations
+                    Don't use layout properties which trigger full pipeline
+
+        
     Next.js
         React Framework
         Built on top of React 
