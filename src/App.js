@@ -1701,37 +1701,7 @@ root.render(<Heading />);
         // How long data stays "fresh"
         staleTime: 5 * 60 * 1000, // 5 minutes        
         // How long inactive data stays in cache
-        cacheTime: 10 * 60 * 1000,
-        
-    
-    Advanced React Patterns
-        Reusability
-            UI 
-                components and props
-                children prop 
-                    to customize component content 
-            Stateful Logic 
-                Custom Hooks
-        Render Props pattern
-        Higher Order component pattern
-        Compound component pattern 
-            set of related components together achieve a task
-            uses Context API
-            1.create context
-            2.create parent component
-            3.create child components 
-            4.provide context to parent
-            5.use context in child components to access parent data
-            6.add child components as properties to parent component
-            flexible in positioning child components
-            use case: Modal component, Counter component
-            example:
-                <Counter>
-                    <Counter.Label>
-                    <Counter.Decrease icon="-"/>
-                    <Counter.Count />
-                    <Counter.Increase icon="+"/>
-                </Counter>
+        cacheTime: 10 * 60 * 1000, // 10 minutes
 
     Different State Management Solutions
         React Context
@@ -1762,6 +1732,37 @@ root.render(<Heading />);
         limiting or performance suffers. Choose Redux for large, complex apps with strict 
         requirements and big teams. 
     
+    Micro-Frontend Architecture
+        1. Build-Time Integration (NPM Packages)
+            "dependencies": {
+                "@myorg/auth-mfe": "^1.2.0",
+                "@myorg/products-mfe": "^2.1.0",
+                "@myorg/cart-mfe": "^1.5.0"
+            }
+            Pros:
+                Simple to implement
+                Type safety
+                Fast runtime (no loading overhead)
+            Cons:
+                Redeploy entire app for any MFE update
+                All MFEs must use same framework version
+                Large bundle size
+        2. Runtime Integration (Module Federation)
+            Webpack Module Federation
+            Benefits:
+                Independent deployments
+                Different frameworks possible
+                Smaller initial bundle
+                Share dependencies
+            Challenges:
+                Complex setup
+                Version conflicts
+                Runtime errors if remote fails
+                Type safety harder
+        Communication Between Micro-Frontends
+            1. Shared State (Event Bus)
+            2. Shared Context Provider
+            3. URL/Query Params
     Testing 
         Unit testing 
             testing just a single component or function
