@@ -2039,6 +2039,91 @@ root.render(<Heading />);
             });
         Selective Hydration (React 18+)
             Prioritizes interactive parts
+    SSR vs CSR vs SSG vs ISR
+        Client-Side Rendering (CSR)
+            Server sends minimal HTML + JS bundles, Browser downloads Javascript
+            React loads and renders components on client
+            Pros
+                Rich interactivity (already hydrated)
+                Fast subsequent navigations (no page reload)
+                Lower server costs (static hosting)
+                Better for apps with frequent updates
+                Simpler backend (just API)
+            Cons
+                Slow initial load (download + parse JS)
+                Poor SEO (content not in initial HTML)
+                Blank screen while loading
+                Bad for slow networks
+                Higher data usage
+            When to Use CSR
+                Authenticated dashboards
+                Admin panels
+                Web applications (not websites)
+                Real-time apps (chat, trading platforms)
+                Tools and utilities
+        Server-Side Rendering (SSR)
+            Pros
+                Fast First Contentful Paint (content in HTML)
+                Great SEO (crawlers see content)
+                Works without JavaScript
+                Good for personalized content
+                Always fresh data
+            Cons
+                Slower TTFB (server does work)
+                Server costs (compute on every request)
+                Can't cache easily (dynamic)
+                Hydration mismatch issues
+                Increased server load
+            When to Use SSR
+                Good for:
+                Personalized content (user-specific)
+                Real-time data (stock prices, sports scores)
+                Frequently changing content
+                SEO-critical pages that update often
+                Social media feeds
+        Static Site Generation (SSG)
+            Pros
+                Fastest possible load (CDN edge)
+                Excellent SEO (full HTML)
+                Lowest server costs (no compute)
+                Best Core Web Vitals scores
+                Works without JavaScript
+                Scales infinitely (just files)
+            Cons
+                Build time increases with pages (1000 pages = slow)
+                Content becomes stale (until rebuild)
+                Can't personalize per user
+                Need to rebuild for updates
+                Not suitable for real-time data
+            When to Use SSG
+                Marketing pages
+                Blogs
+                Documentation
+                Landing pages
+                Product catalogs (stable inventory)
+                About/Contact pages
+        Incremental Static Regeneration (ISR)
+            Pros
+                Fast as SSG (CDN speed)
+                Content stays relatively fresh
+                No build time explosion
+                Great SEO
+                Scales well
+            Cons
+                Still not real-time
+                First visitor after revalidate gets stale
+                Can't personalize
+                Complex cache invalidation
+            When to Use ISR
+                E-commerce (products change occasionally)
+                News sites (articles update)
+                Blogs with frequent posts
+                Content that updates hourly/daily
+                High-traffic sites needing freshness
+        Each pattern solves different problems
+        Modern apps use multiple strategies
+        Performance vs Freshness trade-off
+        If public content, SEO matters: use SSR/SSG/ISR
     Next.js
         React Framework
         Built on top of React 
