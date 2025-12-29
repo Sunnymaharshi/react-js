@@ -2131,6 +2131,32 @@ root.render(<Heading />);
         3. Take another snapshot
         4. Compare snapshots
         5. Look for objects that should be garbage collected but aren't
+        Common Causes
+            1. Forgotten timers
+                const id = setInterval(() => {
+                    // Keeps closure alive forever
+                    console.log(data);
+                }, 1000);
+                Fix: clearInterval(id)
+            2. Detached DOM nodes
+                let elements = [];
+                function addElement() {
+                    const div = document.createElement('div');
+                    elements.push(div);  // Referenced but not in DOM
+                }
+            3. Closures capturing large contexts
+                function outer() {
+                    const hugeArray = new Array(1000000);
+                    return function inner() {
+                        console.log('hi');  // Entire outer scope kept alive!
+                    };
+                }
+            4. Global variables
+                window.cache = {};  // Lives forever
+            5. Event listeners
+                element.addEventListener('click', handler);
+                // element removed but listener still references it
+
     Critical Rendering Path (CRP)
         sequence of steps browser takes to convert HTML,CSS,JS into pixels on screen
         shorter CRP means the user sees content sooner
@@ -2192,7 +2218,7 @@ root.render(<Heading />);
                 Good use of layers
                     add following for frequently animated elements
                     will-change: transform, opacity;
-                    Don't add for every element
+                    Don't add for every element, since layers consume memory
                 Composite-Only Animations
                     Use transform and opacity for smooth animations
                     Don't use layout properties which trigger full pipeline
@@ -2288,8 +2314,105 @@ root.render(<Heading />);
         JSONP (JSON with Padding)
             legacy technique to bypass same-origin policy by exploiting <script> tags
             Deprecated, CORS is modern alternative
+    Authentication
+        Session based 
+            1. User submits credentials → Server
+            2. Server validates → Creates session → Stores in DB/Redis
+            3. Server sends Session ID in cookie → Client
+            4. Client automatically sends cookie with each request
+            5. Server looks up session, validates user
+            Pros
+                Session data stored server-side (can revoke immediately)
+                Cookie handling automatic
+                Less client complexity
+            Cons
+                Server must maintain session state (not stateless)
+                Scaling requires shared session store (Redis)
+                CSRF vulnerability (mitigated with tokens)
+                Not ideal for mobile apps (cookies are browser-specific)
+        JWT (JSON Web Token)
+            structure: header.payload.signature
+            header 
+                algorithm and token type
+            payload
+                user information and issue and expiry time
+            signature
+                HMACSHA256(
+                    base64UrlEncode(header) + "." + base64UrlEncode(payload),
+                    secret
+                )
+            1. User submits credentials → Server
+            2. Server validates → Creates JWT → Signs with secret
+            3. Server sends JWT → Client
+            4. Client stores JWT (localStorage/memory)
+            5. Client sends JWT in Authorization header
+            6. Server verifies signature and expiration
+            Storage Options
+                localStorage
+                    Simple, persists across tabs
+                    Vulnerable to XSS (any script can access)
+                sessionStorage
+                    Cleared when tab closes
+                    Still XSS vulnerable, doesn't persist
+                Memory
+                    No XSS risk
+                    Lost on page refresh 
+                HttpOnly Cookie
+                    XSS protection, automatic sending
+                    Need CSRF protection, similar to sessions
+        OAuth
+            authorization framework (not authentication, though often used for it).
+            Delegated authorization
+                Let app X access my data without giving it my password
+            Allows third-party applications to access user resources without exposing credentials.
+            Scoped permissions: Fine-grained control
+            Easy revocation: Revoke in one click
+            Universal standard: Works with Google, Facebook, GitHub, etc.
+            Better UX: "Sign in with Google" - no new password to remember
+            Four Roles
+                Resource Owner
+                    The user who owns the data
+                Client
+                    Your application requesting access
+                Authorization Server
+                    Issues tokens (e.g., Google, GitHub)
+                Resource Server
+                    Hosts the protected data (e.g., Google Drive API)
+            Two Types of Tokens
+                Access Token
+                    Short-lived (~1 hour)
+                    grants access to resources
+                    opaque string
+                Refresh Token
+                    Long-lived (days/months)
+                    used to get new access tokens
+                    stored securely
+            OAuth Grant Types
+                1. Authorization Code (Most secure for web apps)
+                    User redirects to provider
+                    User logs in and approves
+                    Provider redirects back with authorization code
+                    Your backend exchanges code + client secret for tokens
+                    Use when: Traditional web apps with backend
+                2. Authorization Code + PKCE (For SPAs/Mobile)
+                    Proof Key for Code Exchange
+                    Same as above but without client secret
+                    Uses cryptographic challenge/verifier instead
+                    Prevents authorization code interception
+                    Use when: Single Page Apps, mobile apps, public clients
+                3. Client Credentials (Machine-to-machine)
+                    App authenticates directly with client ID + secret
+                    No user involvement
+                    Use when: Backend services talking to each other
+                
+        OpenID Connect
+            Built on top of OAuth 2.0 for authentication. 
+            Standardized authentication
+                Let me log in using my Google/Facebook account
+            Adds ID Token (JWT containing user identity).
 
-                        
+                    
+
     Next.js
         React Framework
         Built on top of React 
