@@ -2409,7 +2409,30 @@ root.render(<Heading />);
             Standardized authentication
                 Let me log in using my Google/Facebook account
             Adds ID Token (JWT containing user identity).
-
+    
+    Progressive Rendering
+        set of techniques to display content to users as quickly as possible 
+        rather than waiting for the entire page to load.
+        makes sites feel fast by showing users meaningful content immediately
+        even when the complete page takes time to load.
+        Prioritizes
+            Show critical content first (above-the-fold)
+            Load non-critical content later
+            Render incrementally as data arrives
+            Keep the page interactive ASAP
+        1. Inline the Critical CSS
+            Inline minimal CSS needed for visible content, defer the rest.
+        2. Code Splitting & Lazy Loading
+        3. Image Progressive Loading
+        4. Streaming Server-Side Rendering (SSR)
+        5. Skeleton Screens & Placeholders
+        6. Resource Hints & Prioritization
+            rel="preload", rel="prefetch", rel="dns-prefetch", rel="preconnect"
+        7. Virtual Scrolling / Windowing
+        8. Font Loading Strategies
+            font-display: swap
+            font-display: optional
+            Preload critical fonts
                     
 
     Next.js
