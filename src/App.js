@@ -2403,8 +2403,7 @@ root.render(<Heading />);
                 3. Client Credentials (Machine-to-machine)
                     App authenticates directly with client ID + secret
                     No user involvement
-                    Use when: Backend services talking to each other
-                
+                    Use when: Backend services talking to each other      
         OpenID Connect
             Built on top of OAuth 2.0 for authentication. 
             Standardized authentication
