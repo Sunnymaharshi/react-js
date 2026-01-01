@@ -2433,7 +2433,31 @@ root.render(<Heading />);
             font-display: swap
             font-display: optional
             Preload critical fonts
-                    
+    CSS in JS
+        styling approach where you write CSS directly within your JavaScript code
+        ex: const buttonStyle = {
+                backgroundColor: 'blue',
+                padding: '10px'
+            }; 
+        Popular libraries include
+            Styled-components, Emotion, JSS
+        Benefits
+            Scoping styles to components automatically (no naming conflicts)
+            Dynamic styling based on props or state
+            Dead code elimination (unused styles don't ship to production)
+            Easier to maintain since styles live with component logic
+        Tradeoffs
+            Adds runtime overhead (styles generated at runtime)
+            Can increase bundle size
+    CSSOM (CSS Object Model)
+        browser API that represents all CSS styles on a page as a tree structure
+        similar to how the DOM represents HTML.
+        Computed styles
+            Final styles after cascade, inheritance, and specificity are applied
+        StyleSheet objects
+            Represent individual stylesheets in your page
+        CSSRule objects
+            Individual CSS rules within stylesheets
 
     Next.js
         React Framework
