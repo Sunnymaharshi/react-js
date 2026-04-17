@@ -72,7 +72,7 @@ React.createElement
 const heading = React.createElement(
   "h1",
   { id: "heading" },
-  "Hello world from React Element"
+  "Hello world from React Element",
 );
 // console.log(heading);
 /* 
@@ -1974,7 +1974,14 @@ root.render(<Heading />);
                 HTML is generated at build time (only once)
                 static site generation
             Dynamic
-                HTML is generated each time server receives new request                
+                HTML is generated each time server receives new request   
+        Transfer-Encoding
+            how the response body is packaged for transmission
+            ex: Transfer-Encoding: chunked
+                Content-Type: text/html
+            Enables streaming — browser can render HTML progressively
+        server flushes HTML chunks as components resolve
+        and the browser progressively hydrates.           
         Pros
             Faster initial page loads 
                 Less JavaScript code needs to be downloaded and executed
