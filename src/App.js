@@ -1970,11 +1970,23 @@ root.render(<Heading />);
         best for Content-driven websites or apps where SEO is essential 
         like E-commerce, blogs, news, marketing website etc
         Types 
-            Static
+            Static (Static site generation) (SSG)
                 HTML is generated at build time (only once)
                 static site generation
             Dynamic
-                HTML is generated each time server receives new request   
+                HTML is generated each time server receives new request 
+        How it works
+            1. Request hits server
+            2. Server renders React tree to HTML string
+            3. HTML sent to browser → user sees content (FCP)
+            4. Browser downloads JS bundle
+            5. React hydrates — attaches event listeners to existing DOM
+            6. App is now interactive (TTI)  
+        React 18 SSR Architecture
+            SSR with streaming and Suspense
+            Server streams HTML in chunks as components resolve
+            React 18 hydrates components independently as JS loads
+            User interaction prioritizes hydration order
         Transfer-Encoding
             how the response body is packaged for transmission
             ex: Transfer-Encoding: chunked
