@@ -564,6 +564,16 @@ root.render(<Heading />);
             6. Switch Pointers
                 - work-in-progress becomes current
                 - Keep old tree for next update cycle
+    Concurrent mode 
+        Before React 18, every render was synchronous and blocking
+        React can now pause, interrupt, and restart renders.
+        Concurrent mode makes rendering interruptible, which is what enables 
+        all the scheduling features 
+            useTransition
+            useDeferredValue
+            Suspense with streaming
+            Automatic batching
+
     When React Preserves vs. Recreates State
         State PRESERVED
             Props change only - Same type, same position, same key
@@ -688,6 +698,10 @@ root.render(<Heading />);
     Stale Closures in React
         A stale closure happens when a function "remembers" an old value of a variable 
         instead of using the current value.
+        every React render produces a frozen snapshot of all variables. 
+        Closures capture that snapshot.
+        Stale closures happen when a callback from an old snapshot outlives 
+        that render and keeps executing.
         function Counter() {
             const [count, setCount] = useState(0);
 
@@ -698,9 +712,10 @@ root.render(<Heading />);
             };
         }
         Each render creates a new version of handleClick with its own count value
-        solutions
+        fixes
             setCount(prevCount => prevCount + 1);
             useRef
+            Correct deps array in useEffect
     forwardRef in React
         lets you pass a ref through a component to one of its children. 
         It's necessary because refs don't get passed like regular props.
@@ -818,8 +833,9 @@ root.render(<Heading />);
                 usage: removing setTimeout or setInterval, unsubscribing subscriptions, removing event listeners etc 
                 we can cancel/abort the fetch request in cleanup function using AbortController browser API
         uselayoutEffect Hook
+            You need to read or write the DOM before the browser paints.
             it runs before browser paint (component rendered on the browser)
-            not used much
+            usage: Tooltip/popover appears in wrong position for a frame, then snaps
         useRef Hook 
             normal variables will reset to their initial value when component re-renders
             lets u reference a value that persistented across renders
@@ -878,9 +894,10 @@ root.render(<Heading />);
             * only use these when it truly improves the performance, do not use these everywhere 
             as these needs to cached in memory
         useDeferredValue Hook 
+            Defers a value. You work with what you receive; 
+            React renders with a stale version while catching up. 
             lets you defer updating a part of the UI to keep it responsive during expensive renders.
-            takes value, initialValue?
-            it defers the value u have passed 
+            takes value, initialValue? 
             ex: const [query, setQuery] = useState('');
             const deferredQuery = useDeferredValue(query);
             React will first attempt a re-render with the old value (so it will return the old value), 
@@ -899,6 +916,8 @@ root.render(<Heading />);
                 setResults(filtered); // Also blocks UI
             };
             useTransition Hook 
+                Defers a state update. You own the setState call. 
+                Gives isPending so you can show explicit loading UI while transition runs.
                 marks updates as non-urgent, allowing React to keep the UI responsive
                 const [isPending, startTransition] = useTransition();
                 const handleChange = (e) => {
@@ -936,6 +955,23 @@ root.render(<Heading />);
             Use useTransition when you control the state update and want to defer it.
             Use useDeferredValue when you receive a value (prop/state) and want to defer using it.
                 <ExpensiveResults query={deferredQuery} />
+        useEffectEvent
+            You have a callback used inside useEffect that needs to read current props/state, 
+            but you don't want to re-run the effect every time those values change. 
+            You want to "escape" the dependency array.
+            ex: const onVisit = useEffectEvent((visitUrl) => {
+                    logVisit(visitUrl, count); // reads latest count at call time
+                });
+                useEffect(() => {
+                    onVisit(url); // onVisit excluded from deps — not reactive
+                }, [url]);             // effect only re-runs when url changes
+            useEffectEvent functions cannot be passed to other components or called outside the effect.
+            They are tightly scoped to the effect that owns them.
+            // The old workaround (still valid in stable React)
+            useEffect(() => {
+                const currentCount = countRef.current; // read via ref, no linter complaint
+                logVisit(url, currentCount);
+            }, [url]); // countRef is stable, doesn't need to be in deps
         custom Hooks 
             re-using non-UI logic which uses Hooks
             lets you extract component logic into reusable functions.
@@ -2178,11 +2214,26 @@ root.render(<Heading />);
 
     Critical Rendering Path (CRP)
         sequence of steps browser takes to convert HTML,CSS,JS into pixels on screen
-        shorter CRP means the user sees content sooner
-        1. Minimize Critical Resources
-        2. Minimize Critical Bytes
-        3. Optimize CSS Delivery
-        4. Eliminate Render-Blocking JavaScript
+        HTML bytes → DOM → CSSOM → Render tree → Layout → Paint → Composite
+        DOM construction
+            Browser parses HTML bytes → tokens → nodes → DOM tree
+        CSSOM construction
+            CSS bytes parsed into a typed style tree — cascaded, computed, resolved
+        Render tree
+            DOM + CSSOM merged
+            visible nodes get computed styles
+        Layout (reflow)
+            Browser calculates geometry — position, size of every render tree node
+        Paint
+            Browser rasterizes each layer 
+            fills pixels on the screen with colors, borders, shadows
+        Composite
+            GPU assembles painted layers in correct z-order 
+            final frame to screen
+        Only transform and opacity skip both layout and paint 
+        they go straight to the GPU compositor thread. 
+        Everything else (width, color, box-shadow, top/left) triggers the full pipeline from layout down.
+
     Browser Rendering Pipeline
         1: JavaScript
             JavaScript modifies the DOM or CSSOM
